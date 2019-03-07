@@ -1,0 +1,59 @@
+---
+  Kuryr.list_networks:
+    -
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 1
+      sla:
+        failure_rate:
+          max: 0
+
+  Kuryr.create_and_delete_networks_with_kuryr:
+    -
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 1
+      sla:
+        failure_rate:
+          max: 0
+
+  Kuryr.create_and_delete_networks_without_kuryr:
+    -
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 1
+      sla:
+        failure_rate:
+          max: 0
+
+  Kuryr.start_and_stop_containers:
+    # Start/stop Containers with Kuryr Network
+    -
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 1
+      context:
+        docker_network:
+          is_kuryr: True
+          Subnet: 50.0.0.0/24
+          IPRange: 50.0.0.0/24
+          Gateway: 50.0.0.1
+      sla:
+        failure_rate:
+          max: 0
+    -
+    # Start/stop Containers with Default Network
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 1
+      context:
+        docker_network:
+          is_kuryr: False
+      sla:
+        failure_rate:
+          max: 0

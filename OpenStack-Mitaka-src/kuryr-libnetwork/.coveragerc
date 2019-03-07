@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = kuryr_libnetwork
+omit = kuryr_libnetwork/tests/*
+
+[report]
+ignore_errors = True
