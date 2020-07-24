@@ -134,7 +134,7 @@ with open(file_name, 'w') as f:
             "project:openstack/neutron-lbaas OR "
             "project:openstack/neutron-vpnaas) status:open NOT owner:self "
             "NOT label:Workflow<=-1 "
-            "NOT label:Code-Review>=-2,self branch:master\n")
+            "NOT label:Code-Review>=-2,self branch:main\n")
     f.write("\n")
 
     print("Querying Launchpad, this might take a while...")

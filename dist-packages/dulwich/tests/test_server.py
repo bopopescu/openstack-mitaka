@@ -194,7 +194,7 @@ class UploadPackHandlerTestCase(TestCase):
         refs = {
             b'refs/tags/tag1': ONE,
             b'refs/tags/tag2': TWO,
-            b'refs/heads/master': FOUR,  # not a tag, no peeled value
+            b'refs/heads/main': FOUR,  # not a tag, no peeled value
             }
         # repo needs to peel this object
         self._repo.object_store.add_object(make_commit(id=FOUR))
@@ -307,7 +307,7 @@ class ReceivePackHandlerTestCase(TestCase):
 
     def test_apply_pack_del_ref(self):
         refs = {
-            b'refs/heads/master': TWO,
+            b'refs/heads/main': TWO,
             b'refs/heads/fake-branch': ONE}
         self._repo.refs._update(refs)
         update_refs = [[ONE, ZERO_SHA, b'refs/heads/fake-branch'], ]
@@ -1069,14 +1069,14 @@ class ServeCommandTests(TestCase):
     def test_receive_pack(self):
         commit = make_commit(id=ONE, parents=[], commit_time=111)
         self.backend.repos[b"/"] = MemoryRepo.init_bare(
-            [commit], {b"refs/heads/master": commit.id})
+            [commit], {b"refs/heads/main": commit.id})
         outf = BytesIO()
         exitcode = self.serve_command(ReceivePackHandler, [b"/"],
                                       BytesIO(b"0000"), outf)
         outlines = outf.getvalue().splitlines()
         self.assertEqual(2, len(outlines))
         self.assertEqual(
-                b"1111111111111111111111111111111111111111 refs/heads/master",
+                b"1111111111111111111111111111111111111111 refs/heads/main",
                 outlines[0][4:].split(b"\x00")[0])
         self.assertEqual(b"0000", outlines[-1])
         self.assertEqual(0, exitcode)

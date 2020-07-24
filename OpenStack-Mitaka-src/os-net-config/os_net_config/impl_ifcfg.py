@@ -1654,7 +1654,7 @@ class IfcfgNetConfig(os_net_config.NetConfig):
                 self.ifup(linux_bond)
 
             for bond in self.bond_primary_ifaces:
-                self.ovs_appctl('bond/set-active-slave', bond,
+                self.ovs_appctl('bond/set-active-subordinate', bond,
                                 self.bond_primary_ifaces[bond])
 
             if ivs_uplinks or ivs_interfaces:

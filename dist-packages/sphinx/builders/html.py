@@ -328,7 +328,7 @@ class StandaloneHTMLBuilder(Builder):
             version = self.config.version,
             last_updated = self.last_updated,
             copyright = self.config.copyright,
-            master_doc = self.config.master_doc,
+            main_doc = self.config.main_doc,
             use_opensearch = self.config.html_use_opensearch,
             docstitle = self.config.html_title,
             shorttitle = self.config.html_short_title,
@@ -390,7 +390,7 @@ class StandaloneHTMLBuilder(Builder):
                 pass
             related = self.relations.get(related[0])
         if parents:
-            parents.pop() # remove link to the master file; we have a generic
+            parents.pop() # remove link to the main file; we have a generic
                           # "back to index" link already
         parents.reverse()
 
@@ -886,7 +886,7 @@ class SingleFileHTMLBuilder(StandaloneHTMLBuilder):
     def get_target_uri(self, docname, typ=None):
         if docname in self.env.all_docs:
             # all references are on the same page...
-            return self.config.master_doc + self.out_suffix + \
+            return self.config.main_doc + self.out_suffix + \
                    '#document-' + docname
         else:
             # chances are this is a html_additional_page
@@ -898,7 +898,7 @@ class SingleFileHTMLBuilder(StandaloneHTMLBuilder):
 
     def fix_refuris(self, tree):
         # fix refuris with double anchor
-        fname = self.config.master_doc + self.out_suffix
+        fname = self.config.main_doc + self.out_suffix
         for refnode in tree.traverse(nodes.reference):
             if 'refuri' not in refnode:
                 continue
@@ -911,17 +911,17 @@ class SingleFileHTMLBuilder(StandaloneHTMLBuilder):
                 refnode['refuri'] = fname + refuri[hashindex:]
 
     def assemble_doctree(self):
-        master = self.config.master_doc
-        tree = self.env.get_doctree(master)
-        tree = inline_all_toctrees(self, set(), master, tree, darkgreen)
-        tree['docname'] = master
-        self.env.resolve_references(tree, master, self)
+        main = self.config.main_doc
+        tree = self.env.get_doctree(main)
+        tree = inline_all_toctrees(self, set(), main, tree, darkgreen)
+        tree['docname'] = main
+        self.env.resolve_references(tree, main, self)
         self.fix_refuris(tree)
         return tree
 
     def get_doc_context(self, docname, body, metatags):
         # no relation links...
-        toc = self.env.get_toctree_for(self.config.master_doc, self, False)
+        toc = self.env.get_toctree_for(self.config.main_doc, self, False)
         # if there is no toctree, toc is None
         if toc:
             self.fix_refuris(toc)
@@ -956,8 +956,8 @@ class SingleFileHTMLBuilder(StandaloneHTMLBuilder):
         doctree = self.assemble_doctree()
         self.info()
         self.info(bold('writing... '), nonl=True)
-        self.write_doc_serialized(self.config.master_doc, doctree)
-        self.write_doc(self.config.master_doc, doctree)
+        self.write_doc_serialized(self.config.main_doc, doctree)
+        self.write_doc(self.config.main_doc, doctree)
         self.info('done')
 
     def finish(self):

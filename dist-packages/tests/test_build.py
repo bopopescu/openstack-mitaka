@@ -82,8 +82,8 @@ def test_multibyte_path(app):
         ==========================
         """))
 
-    master_doc = srcdir / 'contents.txt'
-    master_doc.write_bytes((master_doc.text() + dedent("""
+    main_doc = srcdir / 'contents.txt'
+    main_doc.write_bytes((main_doc.text() + dedent("""
             .. toctree::
 
                %(mb_name)s/%(mb_name)s

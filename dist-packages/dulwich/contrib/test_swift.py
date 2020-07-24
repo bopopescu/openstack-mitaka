@@ -483,7 +483,7 @@ class TestSwiftInfoRefsContainer(TestCase):
     def setUp(self):
         super(TestSwiftInfoRefsContainer, self).setUp()
         content = (
-            b"22effb216e3a82f97da599b8885a6cadb488b4c5\trefs/heads/master\n"
+            b"22effb216e3a82f97da599b8885a6cadb488b4c5\trefs/heads/main\n"
             b"cca703b0e1399008b53a1a236d6b4584737649e4\trefs/heads/dev")
         self.store = {'fakerepo/info/refs': content}
         self.conf = swift.load_conf(file=StringIO(config_file %
@@ -498,7 +498,7 @@ class TestSwiftInfoRefsContainer(TestCase):
         self.fsc.store = self.store
         irc = swift.SwiftInfoRefsContainer(self.fsc, self.object_store)
         self.assertIn(b'refs/heads/dev', irc.allkeys())
-        self.assertIn(b'refs/heads/master', irc.allkeys())
+        self.assertIn(b'refs/heads/main', irc.allkeys())
 
     def test_set_if_equals(self):
         self.fsc.store = self.store

@@ -18,7 +18,7 @@ from sphinx.errors import ExtensionError, ConfigError, VersionRequirementError
 from sphinx.util.pycompat import b
 
 
-@with_app(confoverrides={'master_doc': 'master', 'nonexisting_value': 'True',
+@with_app(confoverrides={'main_doc': 'main', 'nonexisting_value': 'True',
                          'latex_elements.docclass': 'scrartcl'})
 def test_core_config(app):
     cfg = app.config
@@ -29,7 +29,7 @@ def test_core_config(app):
     assert cfg.templates_path == ['_templates']
 
     # overrides
-    assert cfg.master_doc == 'master'
+    assert cfg.main_doc == 'main'
     assert cfg.latex_elements['docclass'] == 'scrartcl'
 
     # simple default values

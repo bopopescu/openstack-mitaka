@@ -49,11 +49,11 @@ _query_args = [
      dict(action='store_true',
           default=True,
           dest='stop_at_branch_base',
-          help='stop scanning when the branch meets master')),
+          help='stop scanning when the branch meets main')),
     (('--no-stop-at-branch-base',),
      dict(action='store_false',
           dest='stop_at_branch_base',
-          help='do not stop scanning when the branch meets master')),
+          help='do not stop scanning when the branch meets main')),
 ]
 
 

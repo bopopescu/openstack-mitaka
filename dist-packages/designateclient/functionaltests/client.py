@@ -81,24 +81,24 @@ class ZoneCommands(object):
         return self.parsed_cmd('zone delete %s' % id, *args, **kwargs)
 
     def zone_create(self, name, email=None, ttl=None, description=None,
-                    type=None, masters=None, *args, **kwargs):
+                    type=None, mains=None, *args, **kwargs):
         options_str = build_option_string({
             "--email": email,
             "--ttl": ttl,
             "--description": description,
-            "--masters": masters,
+            "--mains": mains,
             "--type": type,
         })
         cmd = 'zone create {0} {1}'.format(name, options_str)
         return self.parsed_cmd(cmd, FieldValueModel, *args, **kwargs)
 
     def zone_set(self, id, email=None, ttl=None, description=None,
-                 type=None, masters=None, *args, **kwargs):
+                 type=None, mains=None, *args, **kwargs):
         options_str = build_option_string({
             "--email": email,
             "--ttl": ttl,
             "--description": description,
-            "--masters": masters,
+            "--mains": mains,
             "--type": type,
         })
         cmd = 'zone set {0} {1}'.format(id, options_str)

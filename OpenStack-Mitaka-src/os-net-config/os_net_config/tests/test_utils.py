@@ -50,9 +50,9 @@ local0                            0        down
 
 _VPPBOND_OUTPUT = """
               Name                Idx   Link  Hardware
-BondEthernet0                      3     up   Slave-Idx: 1 2
-TenGigabitEthernet2/0/0            1    slave TenGigabitEthernet2/0/0
-TenGigabitEthernet2/0/1            2    slave TenGigabitEthernet2/0/1
+BondEthernet0                      3     up   Subordinate-Idx: 1 2
+TenGigabitEthernet2/0/0            1    subordinate TenGigabitEthernet2/0/0
+TenGigabitEthernet2/0/1            2    subordinate TenGigabitEthernet2/0/1
 """
 
 _INITIAL_VPP_CONFIG = '''
@@ -651,7 +651,7 @@ api-segment {
 }
 
 dpdk {
-  vdev net_bonding0,slave=0000:00:09.0,slave=0000:00:09.1,mode=2,xmit_policy=l3
+  vdev net_bonding0,subordinate=0000:00:09.0,subordinate=0000:00:09.1,mode=2,xmit_policy=l3
   dev 0000:00:09.1
   uio-driver vfio-pci
   dev 0000:00:09.0 {vlan-strip-offload off}

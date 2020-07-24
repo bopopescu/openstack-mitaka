@@ -19,7 +19,7 @@ from designateclient.v2 import utils as v2_utils
 
 class ZoneController(V2Controller):
     def create(self, name, type_=None, email=None, description=None, ttl=None,
-               masters=None):
+               mains=None):
         type_ = type_ or "PRIMARY"
 
         data = {
@@ -34,8 +34,8 @@ class ZoneController(V2Controller):
             if ttl is not None:
                 data["ttl"] = ttl
 
-        elif type_ == "SECONDARY" and masters:
-            data["masters"] = masters
+        elif type_ == "SECONDARY" and mains:
+            data["mains"] = mains
 
         if description is not None:
             data["description"] = description

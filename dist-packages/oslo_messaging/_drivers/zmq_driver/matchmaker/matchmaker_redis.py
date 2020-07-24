@@ -104,7 +104,7 @@ class RedisMatchMaker(base.MatchMakerBase):
                 socket_timeout=socket_timeout
             )
 
-            self._redis = sentinel.master_for(
+            self._redis = sentinel.main_for(
                 self.conf.matchmaker_redis.sentinel_group_name,
                 socket_timeout=socket_timeout
             )

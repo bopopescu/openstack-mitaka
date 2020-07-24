@@ -245,14 +245,14 @@ class GitClientTests(TestCase):
     def test_send_pack_none(self):
         self.rin.write(
             b'0078310ca9477129b8586fa2afc779c1f57cf64bba6c '
-            b'refs/heads/master\x00 report-status delete-refs '
+            b'refs/heads/main\x00 report-status delete-refs '
             b'side-band-64k quiet ofs-delta\n'
             b'0000')
         self.rin.seek(0)
 
         def update_refs(refs):
             return {
-                b'refs/heads/master':
+                b'refs/heads/main':
                     b'310ca9477129b8586fa2afc779c1f57cf64bba6c'
             }
 
@@ -265,15 +265,15 @@ class GitClientTests(TestCase):
     def test_send_pack_keep_and_delete(self):
         self.rin.write(
             b'0063310ca9477129b8586fa2afc779c1f57cf64bba6c '
-            b'refs/heads/master\x00report-status delete-refs ofs-delta\n'
+            b'refs/heads/main\x00report-status delete-refs ofs-delta\n'
             b'003f310ca9477129b8586fa2afc779c1f57cf64bba6c refs/heads/keepme\n'
             b'0000000eunpack ok\n'
-            b'0019ok refs/heads/master\n'
+            b'0019ok refs/heads/main\n'
             b'0000')
         self.rin.seek(0)
 
         def update_refs(refs):
-            return {b'refs/heads/master': b'0' * 40}
+            return {b'refs/heads/main': b'0' * 40}
 
         def generate_pack_data(have, want, ofs_delta=False):
             return 0, []
@@ -283,22 +283,22 @@ class GitClientTests(TestCase):
             self.rout.getvalue(),
             [b'007f310ca9477129b8586fa2afc779c1f57cf64bba6c '
              b'0000000000000000000000000000000000000000 '
-             b'refs/heads/master\x00report-status ofs-delta0000',
+             b'refs/heads/main\x00report-status ofs-delta0000',
              b'007f310ca9477129b8586fa2afc779c1f57cf64bba6c '
              b'0000000000000000000000000000000000000000 '
-             b'refs/heads/master\x00ofs-delta report-status0000'])
+             b'refs/heads/main\x00ofs-delta report-status0000'])
 
     def test_send_pack_delete_only(self):
         self.rin.write(
             b'0063310ca9477129b8586fa2afc779c1f57cf64bba6c '
-            b'refs/heads/master\x00report-status delete-refs ofs-delta\n'
+            b'refs/heads/main\x00report-status delete-refs ofs-delta\n'
             b'0000000eunpack ok\n'
-            b'0019ok refs/heads/master\n'
+            b'0019ok refs/heads/main\n'
             b'0000')
         self.rin.seek(0)
 
         def update_refs(refs):
-            return {b'refs/heads/master': b'0' * 40}
+            return {b'refs/heads/main': b'0' * 40}
 
         def generate_pack_data(have, want, ofs_delta=False):
             return 0, []
@@ -308,15 +308,15 @@ class GitClientTests(TestCase):
             self.rout.getvalue(),
             [b'007f310ca9477129b8586fa2afc779c1f57cf64bba6c '
              b'0000000000000000000000000000000000000000 '
-             b'refs/heads/master\x00report-status ofs-delta0000',
+             b'refs/heads/main\x00report-status ofs-delta0000',
              b'007f310ca9477129b8586fa2afc779c1f57cf64bba6c '
              b'0000000000000000000000000000000000000000 '
-             b'refs/heads/master\x00ofs-delta report-status0000'])
+             b'refs/heads/main\x00ofs-delta report-status0000'])
 
     def test_send_pack_new_ref_only(self):
         self.rin.write(
             b'0063310ca9477129b8586fa2afc779c1f57cf64bba6c '
-            b'refs/heads/master\x00report-status delete-refs ofs-delta\n'
+            b'refs/heads/main\x00report-status delete-refs ofs-delta\n'
             b'0000000eunpack ok\n'
             b'0019ok refs/heads/blah12\n'
             b'0000')
@@ -326,7 +326,7 @@ class GitClientTests(TestCase):
             return {
                 b'refs/heads/blah12':
                 b'310ca9477129b8586fa2afc779c1f57cf64bba6c',
-                b'refs/heads/master':
+                b'refs/heads/main':
                     b'310ca9477129b8586fa2afc779c1f57cf64bba6c'
             }
 
@@ -350,7 +350,7 @@ class GitClientTests(TestCase):
     def test_send_pack_new_ref(self):
         self.rin.write(
             b'0064310ca9477129b8586fa2afc779c1f57cf64bba6c '
-            b'refs/heads/master\x00 report-status delete-refs ofs-delta\n'
+            b'refs/heads/main\x00 report-status delete-refs ofs-delta\n'
             b'0000000eunpack ok\n'
             b'0019ok refs/heads/blah12\n'
             b'0000')
@@ -369,7 +369,7 @@ class GitClientTests(TestCase):
         def update_refs(refs):
             return {
                 b'refs/heads/blah12': commit.id,
-                b'refs/heads/master':
+                b'refs/heads/main':
                     b'310ca9477129b8586fa2afc779c1f57cf64bba6c'
             }
 
@@ -389,7 +389,7 @@ class GitClientTests(TestCase):
              f.getvalue()])
 
     def test_send_pack_no_deleteref_delete_only(self):
-        pkts = [b'310ca9477129b8586fa2afc779c1f57cf64bba6c refs/heads/master'
+        pkts = [b'310ca9477129b8586fa2afc779c1f57cf64bba6c refs/heads/main'
                 b'\x00 report-status ofs-delta\n',
                 b'',
                 b'']
@@ -401,7 +401,7 @@ class GitClientTests(TestCase):
         self.rin.seek(0)
 
         def update_refs(refs):
-            return {b'refs/heads/master': b'0' * 40}
+            return {b'refs/heads/main': b'0' * 40}
 
         def generate_pack_data(have, want, ofs_delta=False):
             return 0, []
@@ -831,13 +831,13 @@ class LocalGitClientTests(TestCase):
             s.path, lambda heads: [], graph_walker=walker, pack_data=out.write)
         self.assertEqual({
             b'HEAD': b'a90fa2d900a17e99b433217e988c4eb4a2e9a097',
-            b'refs/heads/master': b'a90fa2d900a17e99b433217e988c4eb4a2e9a097',
+            b'refs/heads/main': b'a90fa2d900a17e99b433217e988c4eb4a2e9a097',
             b'refs/tags/mytag': b'28237f4dc30d0d462658d6b937b08a0f0b6ef55a',
             b'refs/tags/mytag-packed':
                 b'b0931cadc54336e78a1d980420e3268903b57a50'
             }, ret.refs)
         self.assertEqual(
-                {b'HEAD': b'refs/heads/master'},
+                {b'HEAD': b'refs/heads/main'},
                 ret.symrefs)
         self.assertEqual(
                 b"PACK\x00\x00\x00\x02\x00\x00\x00\x00\x02\x9d\x08"
@@ -854,10 +854,10 @@ class LocalGitClientTests(TestCase):
             s.path,
             lambda heads: [b"a90fa2d900a17e99b433217e988c4eb4a2e9a097"],
             graph_walker=walker, pack_data=out.write)
-        self.assertEqual({b'HEAD': b'refs/heads/master'}, ret.symrefs)
+        self.assertEqual({b'HEAD': b'refs/heads/main'}, ret.symrefs)
         self.assertEqual({
             b'HEAD': b'a90fa2d900a17e99b433217e988c4eb4a2e9a097',
-            b'refs/heads/master': b'a90fa2d900a17e99b433217e988c4eb4a2e9a097',
+            b'refs/heads/main': b'a90fa2d900a17e99b433217e988c4eb4a2e9a097',
             b'refs/tags/mytag': b'28237f4dc30d0d462658d6b937b08a0f0b6ef55a',
             b'refs/tags/mytag-packed':
             b'b0931cadc54336e78a1d980420e3268903b57a50'
@@ -873,7 +873,7 @@ class LocalGitClientTests(TestCase):
         target = open_repo('a.git')
         self.addCleanup(tear_down_repo, target)
 
-        self.send_and_verify(b"master", local, target)
+        self.send_and_verify(b"main", local, target)
 
     def test_send_pack_with_changes(self):
         local = open_repo('a.git')
@@ -882,7 +882,7 @@ class LocalGitClientTests(TestCase):
         target_path = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, target_path)
         with Repo.init_bare(target_path) as target:
-            self.send_and_verify(b"master", local, target)
+            self.send_and_verify(b"main", local, target)
 
     def test_get_refs(self):
         local = open_repo('refs.git')

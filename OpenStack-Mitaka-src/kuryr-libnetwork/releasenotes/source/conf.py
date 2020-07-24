@@ -44,8 +44,8 @@ templates_path = ['_templates']
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
 
-# The master toctree document.
-master_doc = 'index'
+# The main toctree document.
+main_doc = 'index'
 
 # General information about the project.
 project = u'Kuryr-Libnetwork'
@@ -134,7 +134,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Kuryr-Libnetwork.tex', u'Kuryr-Libnetwork Documentation',
+    (main_doc, 'Kuryr-Libnetwork.tex', u'Kuryr-Libnetwork Documentation',
      u'Kuryr-Libnetwork Developers', 'manual'),
 ]
 
@@ -144,7 +144,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'kuryr-libnetwork', u'Kuryr-Libnetwork Documentation',
+    (main_doc, 'kuryr-libnetwork', u'Kuryr-Libnetwork Documentation',
      [author], 1)
 ]
 
@@ -155,7 +155,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Kuryr-Libnetwork', u'Kuryr-Libnetwork Documentation',
+    (main_doc, 'Kuryr-Libnetwork', u'Kuryr-Libnetwork Documentation',
      author, 'Kuryr-Libnetwork', 'One line description of project.',
      'Miscellaneous'),
 ]

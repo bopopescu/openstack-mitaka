@@ -47,7 +47,7 @@ class Config(object):
         language = (None, 'env'),
         locale_dirs = ([], 'env'),
 
-        master_doc = ('contents', 'env'),
+        main_doc = ('contents', 'env'),
         source_suffix = ('.rst', 'env'),
         source_encoding = ('utf-8-sig', 'env'),
         exclude_patterns = ([], 'env'),
@@ -148,7 +148,7 @@ class Config(object):
         epub_use_index = (lambda self: self.html_use_index, 'html'),
 
         # LaTeX options
-        latex_documents = (lambda self: [(self.master_doc,
+        latex_documents = (lambda self: [(self.main_doc,
                                           make_filename(self.project) + '.tex',
                                           self.project,
                                           '', 'manual')],
@@ -175,7 +175,7 @@ class Config(object):
         text_newlines = ('unix', 'env'),
 
         # manpage options
-        man_pages = (lambda self: [(self.master_doc,
+        man_pages = (lambda self: [(self.main_doc,
                                     make_filename(self.project).lower(),
                                     '%s %s' % (self.project, self.release),
                                     [], 1)],
@@ -183,7 +183,7 @@ class Config(object):
         man_show_urls = (False, None),
 
         # Texinfo options
-        texinfo_documents = (lambda self: [(self.master_doc,
+        texinfo_documents = (lambda self: [(self.main_doc,
                                             make_filename(self.project).lower(),
                                             self.project, '',
                                             make_filename(self.project),

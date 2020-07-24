@@ -72,7 +72,7 @@ project_template = u'''\
         <filterAttribute>%(outname)s</filterAttribute>
         <filterAttribute>%(version)s</filterAttribute>
         <toc>
-            <section title="%(title)s" ref="%(masterdoc)s.html">
+            <section title="%(title)s" ref="%(maindoc)s.html">
 %(sections)s
             </section>
         </toc>
@@ -119,7 +119,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
         self.info('writing project file...')
 
         # sections
-        tocdoc = self.env.get_and_resolve_doctree(self.config.master_doc, self,
+        tocdoc = self.env.get_and_resolve_doctree(self.config.main_doc, self,
                                                   prune_toctrees=False)
         istoctree = lambda node: (
                         isinstance(node, addnodes.compact_paragraph)
@@ -185,7 +185,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
                 'version': htmlescape(self.config.version),
                 'project': htmlescape(self.config.project),
                 'namespace': htmlescape(nspace),
-                'masterdoc': htmlescape(self.config.master_doc),
+                'maindoc': htmlescape(self.config.main_doc),
                 'sections': sections,
                 'keywords': keywords,
                 'files': projectfiles})
@@ -193,7 +193,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
             f.close()
 
         homepage = 'qthelp://' + posixpath.join(
-            nspace, 'doc', self.get_target_uri(self.config.master_doc))
+            nspace, 'doc', self.get_target_uri(self.config.main_doc))
         startpage = 'qthelp://' + posixpath.join(nspace, 'doc', 'index.html')
 
         self.info('writing collection project file...')

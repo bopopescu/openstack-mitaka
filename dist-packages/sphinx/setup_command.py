@@ -75,7 +75,7 @@ class BuildDoc(Command):
         ('release=', None, 'The full version, including alpha/beta/rc tags'),
         ('today=', None, 'How to format the current date, used as the '
          'replacement for |today|'),
-        ('link-index', 'i', 'Link index.html to the master doc'),
+        ('link-index', 'i', 'Link index.html to the main doc'),
     ]
     boolean_options = ['fresh-env', 'all-files', 'link-index']
 
@@ -172,6 +172,6 @@ class BuildDoc(Command):
                 raise
 
         if self.link_index:
-            src = app.config.master_doc + app.builder.out_suffix
+            src = app.config.main_doc + app.builder.out_suffix
             dst = app.builder.get_outfilename('index')
             os.symlink(src, dst)

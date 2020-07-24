@@ -64,8 +64,8 @@ source_suffix = '.rst'
 # The encoding of source files.
 #source_encoding = 'utf-8'
 
-# The master doctree document.
-master_doc = 'index'
+# The main doctree document.
+main_doc = 'index'
 
 # General information about the project.
 project = u'Neutron VPNaaS'

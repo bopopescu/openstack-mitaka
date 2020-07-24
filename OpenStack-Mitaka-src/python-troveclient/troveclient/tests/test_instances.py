@@ -99,7 +99,7 @@ class InstancesTest(testtools.TestCase):
                                         ['db1', 'db2'], ['u1', 'u2'],
                                         datastore="datastore",
                                         datastore_version="datastore-version",
-                                        nics=nics, slave_of='test')
+                                        nics=nics, subordinate_of='test')
         self.assertEqual("/instances", p)
         self.assertEqual("instance", i)
         self.assertEqual(['db1', 'db2'], b["instance"]["databases"])
@@ -111,10 +111,10 @@ class InstancesTest(testtools.TestCase):
                          b["instance"]["datastore"]["version"])
         self.assertEqual(nics, b["instance"]["nics"])
         self.assertEqual(103, b["instance"]["flavorRef"])
-        # Assert that slave_of is not used and if specified, there is a warning
+        # Assert that subordinate_of is not used and if specified, there is a warning
         # and it's value is used for replica_of.
         self.assertEqual('test', b['instance']['replica_of'])
-        self.assertNotIn('slave_of', b['instance'])
+        self.assertNotIn('subordinate_of', b['instance'])
         self.assertTrue(mock_warn.called)
 
     def test_list(self):
@@ -219,9 +219,9 @@ class InstancesTest(testtools.TestCase):
         resp.status_code = 204
 
         def fake_patch(url, body):
-            # Make sure we never pass slave_of to the API.
+            # Make sure we never pass subordinate_of to the API.
             self.assertIn('instance', body)
-            self.assertNotIn('slave_of', body['instance'])
+            self.assertNotIn('subordinate_of', body['instance'])
             return resp, None
 
         self.instances.api.client.patch = mock.Mock(side_effect=fake_patch)

@@ -261,14 +261,14 @@ class DumbHandlersTestCase(WebTestCase):
         objects = [blob1, blob2, blob3, tag1]
         refs = {
           b'HEAD': b'000',
-          b'refs/heads/master': blob1.id,
+          b'refs/heads/main': blob1.id,
           b'refs/tags/tag-tag': tag1.id,
           b'refs/tags/blob-tag': blob3.id,
           }
         backend = _test_backend(objects, refs=refs)
 
         mat = re.search('.*', '//info/refs')
-        self.assertEqual([blob1.id + b'\trefs/heads/master\n',
+        self.assertEqual([blob1.id + b'\trefs/heads/main\n',
                           blob3.id + b'\trefs/tags/blob-tag\n',
                           tag1.id + b'\trefs/tags/tag-tag\n',
                           blob2.id + b'\trefs/tags/tag-tag^{}\n'],

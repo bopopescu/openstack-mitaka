@@ -99,7 +99,7 @@ class GetRecentTagsTest(unittest.TestCase):
             tag_time=cls.tag_test_data[cls.test_tags[1]][2][0]
         )
         obj_store.add_object(cls.t2)
-        cls.repo[b'refs/heads/master'] = cls.c2.id
+        cls.repo[b'refs/heads/main'] = cls.c2.id
         cls.repo[b'refs/tags/' + cls.t2.name] = cls.t2.id  # add annotated tag
 
     @classmethod

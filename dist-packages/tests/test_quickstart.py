@@ -138,7 +138,7 @@ def test_quickstart_defaults(tempdir):
     assert ns['extensions'] == []
     assert ns['templates_path'] == ['_templates']
     assert ns['source_suffix'] == '.rst'
-    assert ns['master_doc'] == 'index'
+    assert ns['main_doc'] == 'index'
     assert ns['project'] == 'Sphinx Test'
     assert ns['copyright'] == '%s, Georg Brandl' % time.strftime('%Y')
     assert ns['version'] == '0.1'
@@ -166,7 +166,7 @@ def test_quickstart_all_answers(tempdir):
         'Project version': '2.0',
         'Project release': '2.0.1',
         'Source file suffix': '.txt',
-        'Name of your master document': 'contents',
+        'Name of your main document': 'contents',
         'autodoc': 'y',
         'doctest': 'yes',
         'intersphinx': 'no',
@@ -193,7 +193,7 @@ def test_quickstart_all_answers(tempdir):
     assert ns['extensions'] == ['sphinx.ext.autodoc', 'sphinx.ext.doctest']
     assert ns['templates_path'] == ['.templates']
     assert ns['source_suffix'] == '.txt'
-    assert ns['master_doc'] == 'contents'
+    assert ns['main_doc'] == 'contents'
     assert ns['project'] == u'STASI™'
     assert ns['copyright'] == u'%s, Wolfgang Schäuble & G\'Beckstein' % \
            time.strftime('%Y')

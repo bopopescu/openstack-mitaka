@@ -14,7 +14,7 @@ jsmath_path = 'dummy.js'
 
 templates_path = ['_templates']
 
-master_doc = 'contents'
+main_doc = 'contents'
 source_suffix = '.txt'
 
 project = 'Sphinx <Tests>'

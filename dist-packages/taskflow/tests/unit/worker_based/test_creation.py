@@ -53,7 +53,7 @@ class TestWorkerBasedActionEngine(test.MockTestCase):
                                      retry_options=None,
                                      worker_expiry=mock.ANY)
         ]
-        self.assertEqual(expected_calls, self.master_mock.mock_calls)
+        self.assertEqual(expected_calls, self.main_mock.mock_calls)
 
     def test_creation_custom(self):
         executor_mock, executor_inst_mock = self._patch_in_executor()
@@ -80,7 +80,7 @@ class TestWorkerBasedActionEngine(test.MockTestCase):
                                      retry_options={},
                                      worker_expiry=1)
         ]
-        self.assertEqual(expected_calls, self.master_mock.mock_calls)
+        self.assertEqual(expected_calls, self.main_mock.mock_calls)
 
     def test_creation_custom_executor(self):
         ex = executor.WorkerTaskExecutor('a', 'test-exchange', ['test-topic'])

@@ -635,19 +635,19 @@ class Scanner(object):
         # Based on
         # http://stackoverflow.com/questions/1527234/finding-a-branch-point-with-git
         # git rev-list $(git rev-list --first-parent \
-        #   ^origin/stable/newton master | tail -n1)^^!
+        #   ^origin/stable/newton main | tail -n1)^^!
         #
-        # Build the set of all commits that appear on the master
+        # Build the set of all commits that appear on the main
         # branch, then scan the commits that appear on the specified
         # branch until we find something that is on both.
-        master_commits = set(
+        main_commits = set(
             c.commit.sha().hexdigest()
-            for c in self._get_walker_for_branch('master')
+            for c in self._get_walker_for_branch('main')
         )
         for c in self._get_walker_for_branch(branch):
-            if c.commit.sha().hexdigest() in master_commits:
+            if c.commit.sha().hexdigest() in main_commits:
                 # We got to this commit via the branch, but it is also
-                # on master, so this is the base.
+                # on main, so this is the base.
                 tags = self._get_valid_tags_on_commit(
                     c.commit.sha().hexdigest().encode('ascii'))
                 if tags:
@@ -670,13 +670,13 @@ class Scanner(object):
         tags on the mainline appear in the right place relative to the
         merge points, regardless of the commit date on the entry.
 
-        # *   d1239b6 (HEAD -> master) Merge branch 'new-branch'
+        # *   d1239b6 (HEAD -> main) Merge branch 'new-branch'
         # |\
         # | * 9478612 (new-branch) one commit on branch
-        # * | 303e21d second commit on master
-        # * | 0ba5186 first commit on master
+        # * | 303e21d second commit on main
+        # * | 0ba5186 first commit on main
         # |/
-        # *   a7f573d original commit on master
+        # *   a7f573d original commit on main
 
         """
         head = self._get_ref(branch)
@@ -715,9 +715,9 @@ class Scanner(object):
             null_merge = False
 
             # OpenStack used to use null-merges to bring final release
-            # tags from stable branches back into the master
+            # tags from stable branches back into the main
             # branch. This confuses the regular traversal because it
-            # makes that stable branch appear to be part of master
+            # makes that stable branch appear to be part of main
             # and/or the later stable branch. When we hit one of those
             # tags, skip it and take the first parent.
             if ignore_null_merges and len(entry.commit.parents) > 1:
@@ -890,7 +890,7 @@ class Scanner(object):
             # scan.
             return None
         # We need to look for the previous branch's root.
-        if branch and branch != 'master':
+        if branch and branch != 'main':
             previous_branch = self._get_earlier_branch(branch)
             if not previous_branch:
                 # This was the first branch, so scan the whole
@@ -999,7 +999,7 @@ class Scanner(object):
                         # The idx is not in versions_by_date.
                         earliest_version = scan_stop_tag
         elif branch and stop_at_branch_base and not earliest_version:
-            # If branch is set and is not "master",
+            # If branch is set and is not "main",
             # then we want to stop at the version before the tag at the
             # base of the branch, which involves a bit of searching.
             LOG.debug('determining earliest_version from branch')

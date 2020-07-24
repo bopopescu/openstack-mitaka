@@ -21,7 +21,7 @@ def with_text_app(*args, **kw):
         'srcdir': '(empty)',
         'confoverrides': {
             'project': 'text',
-            'master_doc': 'contents',
+            'main_doc': 'contents',
         },
     }
     default_kw.update(kw)

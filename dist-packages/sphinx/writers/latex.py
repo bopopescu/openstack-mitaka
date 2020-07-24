@@ -246,8 +246,8 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.next_table_colspec = None
         # stack of [language, linenothreshold] settings per file
         # the first item here is the default and must not be changed
-        # the second item is the default for the master file and can be changed
-        # by .. highlight:: directive in the master file
+        # the second item is the default for the main file and can be changed
+        # by .. highlight:: directive in the main file
         self.hlsettingstack = 2 * [[builder.config.highlight_language,
                                     sys.maxint]]
         self.footnotestack = []

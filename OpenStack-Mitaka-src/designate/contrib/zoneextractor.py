@@ -91,10 +91,10 @@ class Extractor:
         \s* ;                 # Semicolon, possibly preceded by whitespace
         """, re.MULTILINE | re.VERBOSE)
 
-    _type_master_regex = re.compile(
+    _type_main_regex = re.compile(
         r"""
         type \s+ # The type keyword, followed by some whitespace
-        master   # The master keyword
+        main   # The main keyword
         \s* ;    # Semicolon, possibly preceded by whitespace
         """, re.MULTILINE | re.VERBOSE)
 
@@ -163,8 +163,8 @@ class Extractor:
         for zone in self._zone_regex.finditer(self._conf):
             content = zone.group('content')
             name = zone.group('name')
-            # Make sure it's a master zone:
-            if self._type_master_regex.search(content):
+            # Make sure it's a main zone:
+            if self._type_main_regex.search(content):
                 zonefile = self._zonefile_regex.search(content).group('file')
                 try:
                     zone_object = dns.zone.from_file(zonefile,

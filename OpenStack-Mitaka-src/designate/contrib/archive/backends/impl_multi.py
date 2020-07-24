@@ -31,21 +31,21 @@ class MultiBackend(base.Backend):
     """
     Multi-backend backend
 
-    This backend dispatches calls to a master backend and a slave backend.
-    It enforces master/slave ordering semantics as follows:
+    This backend dispatches calls to a main backend and a subordinate backend.
+    It enforces main/subordinate ordering semantics as follows:
 
-    Creates for tsigkeys, servers and domains are done on the master first,
-    then on the slave.
+    Creates for tsigkeys, servers and domains are done on the main first,
+    then on the subordinate.
 
     Updates for tsigkeys, servers and domains and all operations on records
-    are done on the master only. It's assumed masters and slaves use an
+    are done on the main only. It's assumed mains and subordinates use an
     external mechanism to sync existing domains, most likely XFR.
 
-    Deletes are done on the slave first, then on the master.
+    Deletes are done on the subordinate first, then on the main.
 
-    If the create on the slave fails, the domain/tsigkey/server is deleted from
-    the master. If delete on the master fails, the domain/tdigkey/server is
-    recreated on the slave.
+    If the create on the subordinate fails, the domain/tsigkey/server is deleted from
+    the main. If delete on the main fails, the domain/tdigkey/server is
+    recreated on the subordinate.
     """
     __plugin_name__ = 'multi'
 
@@ -56,8 +56,8 @@ class MultiBackend(base.Backend):
         )
 
         opts = [
-            cfg.StrOpt('master', default='fake', help='Master backend'),
-            cfg.StrOpt('slave', default='fake', help='Slave backend'),
+            cfg.StrOpt('main', default='fake', help='Main backend'),
+            cfg.StrOpt('subordinate', default='fake', help='Subordinate backend'),
         ]
 
         return [(group, opts)]
@@ -65,89 +65,89 @@ class MultiBackend(base.Backend):
     def __init__(self, central_service):
         super(MultiBackend, self).__init__(central_service)
         self.central = central_service
-        self.master = backend.get_backend(cfg.CONF[CFG_GROUP].master,
+        self.main = backend.get_backend(cfg.CONF[CFG_GROUP].main,
                                           central_service)
-        self.slave = backend.get_backend(cfg.CONF[CFG_GROUP].slave,
+        self.subordinate = backend.get_backend(cfg.CONF[CFG_GROUP].subordinate,
                                          central_service)
 
     def start(self):
-        self.master.start()
-        self.slave.start()
+        self.main.start()
+        self.subordinate.start()
 
     def stop(self):
-        self.slave.stop()
-        self.master.stop()
+        self.subordinate.stop()
+        self.main.stop()
 
     def create_tsigkey(self, context, tsigkey):
-        self.master.create_tsigkey(context, tsigkey)
+        self.main.create_tsigkey(context, tsigkey)
         try:
-            self.slave.create_tsigkey(context, tsigkey)
+            self.subordinate.create_tsigkey(context, tsigkey)
         except Exception:
             with excutils.save_and_reraise_exception():
-                self.master.delete_tsigkey(context, tsigkey)
+                self.main.delete_tsigkey(context, tsigkey)
 
     def update_tsigkey(self, context, tsigkey):
-        self.master.update_tsigkey(context, tsigkey)
+        self.main.update_tsigkey(context, tsigkey)
 
     def delete_tsigkey(self, context, tsigkey):
-        self.slave.delete_tsigkey(context, tsigkey)
+        self.subordinate.delete_tsigkey(context, tsigkey)
         try:
-            self.master.delete_tsigkey(context, tsigkey)
+            self.main.delete_tsigkey(context, tsigkey)
         except Exception:
             with excutils.save_and_reraise_exception():
-                self.slave.create_tsigkey(context, tsigkey)
+                self.subordinate.create_tsigkey(context, tsigkey)
 
     def create_zone(self, context, zone):
-        self.master.create_zone(context, zone)
+        self.main.create_zone(context, zone)
         try:
-            self.slave.create_zone(context, zone)
+            self.subordinate.create_zone(context, zone)
         except Exception:
             with excutils.save_and_reraise_exception():
-                self.master.delete_zone(context, zone)
+                self.main.delete_zone(context, zone)
 
     def update_zone(self, context, zone):
-        self.master.update_zone(context, zone)
+        self.main.update_zone(context, zone)
 
     def delete_zone(self, context, zone):
         # Fetch the full zone from Central first, as we may
-        # have to recreate it on slave if delete on master fails
+        # have to recreate it on subordinate if delete on main fails
         deleted_context = context.deepcopy()
         deleted_context.show_deleted = True
 
         full_domain = self.central.find_zone(
             deleted_context, {'id': zone['id']})
 
-        self.slave.delete_zone(context, zone)
+        self.subordinate.delete_zone(context, zone)
         try:
-            self.master.delete_zone(context, zone)
+            self.main.delete_zone(context, zone)
         except Exception:
             with excutils.save_and_reraise_exception():
-                self.slave.create_zone(context, zone)
+                self.subordinate.create_zone(context, zone)
 
-                [self.slave.create_record(context, zone, record)
+                [self.subordinate.create_record(context, zone, record)
                  for record in self.central.find_records(
                      context, {'domain_id': full_domain['id']})]
 
     def create_recordset(self, context, zone, recordset):
-        self.master.create_recordset(context, zone, recordset)
+        self.main.create_recordset(context, zone, recordset)
 
     def update_recordset(self, context, zone, recordset):
-        self.master.update_recordset(context, zone, recordset)
+        self.main.update_recordset(context, zone, recordset)
 
     def delete_recordset(self, context, zone, recordset):
-        self.master.delete_recordset(context, zone, recordset)
+        self.main.delete_recordset(context, zone, recordset)
 
     def create_record(self, context, zone, recordset, record):
-        self.master.create_record(context, zone, recordset, record)
+        self.main.create_record(context, zone, recordset, record)
 
     def update_record(self, context, zone, recordset, record):
-        self.master.update_record(context, zone, recordset, record)
+        self.main.update_record(context, zone, recordset, record)
 
     def delete_record(self, context, zone, recordset, record):
-        self.master.delete_record(context, zone, recordset, record)
+        self.main.delete_record(context, zone, recordset, record)
 
     def ping(self, context):
         return {
-            'master': self.master.ping(context),
-            'slave': self.slave.ping(context)
+            'main': self.main.ping(context),
+            'subordinate': self.subordinate.ping(context)
         }

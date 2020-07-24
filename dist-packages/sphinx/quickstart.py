@@ -81,8 +81,8 @@ source_suffix = '%(suffix)s'
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
-# The master toctree document.
-master_doc = '%(master_str)s'
+# The main toctree document.
+main_doc = '%(main_str)s'
 
 # General information about the project.
 project = u'%(project_str)s'
@@ -238,7 +238,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('%(master_str)s', '%(project_fn)s.tex', u'%(project_doc_texescaped_str)s',
+  ('%(main_str)s', '%(project_fn)s.tex', u'%(project_doc_texescaped_str)s',
    u'%(author_texescaped_str)s', 'manual'),
 ]
 
@@ -268,7 +268,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('%(master_str)s', '%(project_manpage)s', u'%(project_doc_str)s',
+    ('%(main_str)s', '%(project_manpage)s', u'%(project_doc_str)s',
      [u'%(author_str)s'], 1)
 ]
 
@@ -282,7 +282,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('%(master_str)s', '%(project_fn)s', u'%(project_doc_str)s',
+  ('%(main_str)s', '%(project_fn)s', u'%(project_doc_str)s',
    u'%(author_str)s', '%(project_fn)s', 'One line description of project.',
    'Miscellaneous'),
 ]
@@ -379,7 +379,7 @@ intersphinx_mapping = {'http://docs.python.org/': None}
 '''
 
 MASTER_FILE = u'''\
-.. %(project)s documentation master file, created by
+.. %(project)s documentation main file, created by
    sphinx-quickstart on %(now)s.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -390,9 +390,9 @@ Welcome to %(project)s's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: %(mastertocmaxdepth)s
+   :maxdepth: %(maintocmaxdepth)s
 
-%(mastertoctree)s
+%(maintoctree)s
 
 Indices and tables
 ==================
@@ -1019,7 +1019,7 @@ def ask_user(d):
     * version:   version of project
     * release:   release of project
     * suffix:    source file suffix
-    * master:    master document name
+    * main:    main document name
     * epub:      use epub (bool)
     * ext_*:     extensions to use (bools)
     * makefile:  make Makefile
@@ -1090,24 +1090,24 @@ The file name suffix for source files. Commonly, this is either ".txt"
 or ".rst".  Only files with this suffix are considered documents.'''
         do_prompt(d, 'suffix', 'Source file suffix', '.rst', suffix)
 
-    if 'master' not in d:
+    if 'main' not in d:
         print '''
 One document is special in that it is considered the top node of the
 "contents tree", that is, it is the root of the hierarchical structure
 of the documents. Normally, this is "index", but if your "index"
 document is a custom template, you can also set this to another filename.'''
-        do_prompt(d, 'master', 'Name of your master document (without suffix)',
+        do_prompt(d, 'main', 'Name of your main document (without suffix)',
                   'index')
 
-    while path.isfile(path.join(d['path'], d['master']+d['suffix'])) or \
-          path.isfile(path.join(d['path'], 'source', d['master']+d['suffix'])):
+    while path.isfile(path.join(d['path'], d['main']+d['suffix'])) or \
+          path.isfile(path.join(d['path'], 'source', d['main']+d['suffix'])):
         print
-        print bold('Error: the master file %s has already been found in the '
-                   'selected root path.' % (d['master']+d['suffix']))
+        print bold('Error: the main file %s has already been found in the '
+                   'selected root path.' % (d['main']+d['suffix']))
         print 'sphinx-quickstart will not overwrite the existing file.'
         print
-        do_prompt(d, 'master', 'Please enter a new file name, or rename the '
-                  'existing file and press Enter', d['master'])
+        do_prompt(d, 'main', 'Please enter a new file name, or rename the '
+                  'existing file and press Enter', d['main'])
 
     if 'epub' not in d:
         print '''
@@ -1167,10 +1167,10 @@ def generate(d, overwrite=True, silent=False):
     texescape.init()
     indent = ' ' * 4
 
-    if 'mastertoctree' not in d:
-        d['mastertoctree'] = ''
-    if 'mastertocmaxdepth' not in d:
-        d['mastertocmaxdepth'] = 2
+    if 'maintoctree' not in d:
+        d['maintoctree'] = ''
+    if 'maintocmaxdepth' not in d:
+        d['maintocmaxdepth'] = 2
 
     d['project_fn'] = make_filename(d['project'])
     d['project_manpage'] = d['project_fn'].lower()
@@ -1196,7 +1196,7 @@ def generate(d, overwrite=True, silent=False):
     # a Python string literal
     for key in ('project', 'project_doc', 'project_doc_texescaped',
                 'author', 'author_texescaped', 'copyright',
-                'version', 'release', 'master'):
+                'version', 'release', 'main'):
         d[key + '_str'] = d[key].replace('\\', '\\\\').replace("'", "\\'")
 
     if not path.isdir(d['path']):
@@ -1234,8 +1234,8 @@ def generate(d, overwrite=True, silent=False):
 
     write_file(path.join(srcdir, 'conf.py'), conf_text)
 
-    masterfile = path.join(srcdir, d['master'] + d['suffix'])
-    write_file(masterfile, MASTER_FILE % d)
+    mainfile = path.join(srcdir, d['main'] + d['suffix'])
+    write_file(mainfile, MASTER_FILE % d)
 
     if d['makefile']:
         d['rsrcdir'] = d['sep'] and 'source' or '.'
@@ -1253,8 +1253,8 @@ def generate(d, overwrite=True, silent=False):
     print
     print bold('Finished: An initial directory structure has been created.')
     print '''
-You should now populate your master file %s and create other documentation
-source files. ''' % masterfile + ((d['makefile'] or d['batchfile']) and '''\
+You should now populate your main file %s and create other documentation
+source files. ''' % mainfile + ((d['makefile'] or d['batchfile']) and '''\
 Use the Makefile to build the docs, like so:
    make builder
 ''' or '''\

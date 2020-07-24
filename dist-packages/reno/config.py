@@ -150,9 +150,9 @@ _OPTIONS = [
         into the current branch but nothing else.
 
         OpenStack used to use null-merges to bring final release
-        tags from stable branches back into the master branch. This
+        tags from stable branches back into the main branch. This
         confuses the regular traversal because it makes that stable
-        branch appear to be part of master and/or the later stable
+        branch appear to be part of main and/or the later stable
         branch. This option allows us to ignore those.
         """)),
 

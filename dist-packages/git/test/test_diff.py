@@ -54,7 +54,7 @@ class TestDiff(TestBase):
 
         with open(fp, 'w') as fs:
             fs.write("Hola Mundo")
-        r.git.commit(all=True, message="change on master")
+        r.git.commit(all=True, message="change on main")
 
         r.git.checkout('HEAD~1', b='topic')
         with open(fp, 'w') as fs:
@@ -62,7 +62,7 @@ class TestDiff(TestBase):
         r.git.commit(all=True, message="change on topic branch")
 
         # there must be a merge-conflict
-        self.failUnlessRaises(GitCommandError, r.git.cherry_pick, 'master')
+        self.failUnlessRaises(GitCommandError, r.git.cherry_pick, 'main')
 
         # Now do the actual testing - this should just work
         assert len(r.index.diff(None)) == 2

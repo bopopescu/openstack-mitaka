@@ -125,36 +125,36 @@ def _network_config(args):
 
 
 def _set_rh_bonding(name, interface, distro, results):
-    if not any(bond in ['bond_slaves', 'bond_master'] for bond in interface):
+    if not any(bond in ['bond_subordinates', 'bond_main'] for bond in interface):
         return results
 
     # Careful, we are operating on the live 'results' variable
     # so we need to always append our data
     if _is_suse(distro):
-        # SUSE configures the slave interfaces on the master ifcfg file.
-        # The master interface contains a 'bond_slaves' key containing a list
-        # of the slave interfaces
-        if 'bond_slaves' in interface:
+        # SUSE configures the subordinate interfaces on the main ifcfg file.
+        # The main interface contains a 'bond_subordinates' key containing a list
+        # of the subordinate interfaces
+        if 'bond_subordinates' in interface:
             results += "BONDING_MASTER=yes\n"
-            slave_cnt = 0
-            for slave in interface['bond_slaves']:
+            subordinate_cnt = 0
+            for subordinate in interface['bond_subordinates']:
                 results += "BONDING_SLAVE_{id}={name}\n".format(
-                    id=slave_cnt, name=slave)
-                slave_cnt += 1
+                    id=subordinate_cnt, name=subordinate)
+                subordinate_cnt += 1
         else:
-            # Slave interfaces do not know they are part of a bonded
+            # Subordinate interfaces do not know they are part of a bonded
             # interface. All we need to do is to set the STARTMODE
             # to hotplug
             results = results.replace("=auto", "=hotplug")
 
     else:
-        # RedHat does not add any specific configuration to the master
-        # interface. All configuration is done in the slave ifcfg files.
-        if 'bond_slaves' in interface:
+        # RedHat does not add any specific configuration to the main
+        # interface. All configuration is done in the subordinate ifcfg files.
+        if 'bond_subordinates' in interface:
             return results
 
         results += "SLAVE=yes\n"
-        results += "MASTER={0}\n".format(interface['bond_master'])
+        results += "MASTER={0}\n".format(interface['bond_main'])
 
     return results
 
@@ -281,12 +281,12 @@ def write_redhat_interfaces(interfaces, sys_interfaces, args):
             interface_name = sys_interfaces[interface['mac_address']]
 
         if 'bond_links' in interface:
-            # We need to keep track of the slave interfaces because
-            # SUSE configures the slaves on the master ifcfg file
-            bond_slaves = []
+            # We need to keep track of the subordinate interfaces because
+            # SUSE configures the subordinates on the main ifcfg file
+            bond_subordinates = []
             for phy in interface['raw_macs']:
-                bond_slaves.append(sys_interfaces[phy])
-            interface['bond_slaves'] = bond_slaves
+                bond_subordinates.append(sys_interfaces[phy])
+            interface['bond_subordinates'] = bond_subordinates
             # Remove the 'bond_links' key
             interface.pop('bond_links')
 
@@ -448,17 +448,17 @@ def _write_networkd_interface(name, interfaces, files_struct=dict()):
                 files_struct[netdev_file]['[Bond]'].append(
                     'LACPTransmitRate=fast'
                 )
-                if 'slaves' in interface:
-                    for slave in interface['slaves']:
-                        slave_net_file = \
+                if 'subordinates' in interface:
+                    for subordinate in interface['subordinates']:
+                        subordinate_net_file = \
                             '/etc/systemd/network/{name}.network'.format(
-                                name=slave
+                                name=subordinate
                             )
-                        if slave_net_file not in files_struct:
-                            files_struct[slave_net_file] = dict()
-                        if '[Network]' not in files_struct[slave_net_file]:
-                            files_struct[slave_net_file]['[Network]'] = list()
-                        files_struct[slave_net_file]['[Network]'].append(
+                        if subordinate_net_file not in files_struct:
+                            files_struct[subordinate_net_file] = dict()
+                        if '[Network]' not in files_struct[subordinate_net_file]:
+                            files_struct[subordinate_net_file]['[Network]'] = list()
+                        files_struct[subordinate_net_file]['[Network]'].append(
                             'Bond={name}'.format(name=iname)
                         )
                 if 'bond_xmit_hash_policy' in interface:
@@ -479,14 +479,14 @@ def _write_networkd_interface(name, interfaces, files_struct=dict()):
     # vlan mapping sucks (forward and reverse)
     if vlans:
         netdev = vlans[0].split('-')[0]
-        vlan_master_file = \
+        vlan_main_file = \
             '/etc/systemd/network/{name}.network'.format(name=netdev)
-        if vlan_master_file not in files_struct:
-            files_struct[vlan_master_file] = dict()
-        if '[Network]' not in files_struct[vlan_master_file]:
-            files_struct[vlan_master_file]['[Network]'] = list()
+        if vlan_main_file not in files_struct:
+            files_struct[vlan_main_file] = dict()
+        if '[Network]' not in files_struct[vlan_main_file]:
+            files_struct[vlan_main_file]['[Network]'] = list()
         for vlan in vlans:
-            files_struct[vlan_master_file]['[Network]'].append('VLAN=' + vlan)
+            files_struct[vlan_main_file]['[Network]'].append('VLAN=' + vlan)
             vlan_file = '/etc/systemd/network/{name}.network'.format(name=vlan)
             if vlan_file not in files_struct:
                 files_struct[vlan_file] = dict()
@@ -512,7 +512,7 @@ def write_networkd_interfaces(interfaces, sys_interfaces):
             continue
 
         if 'bond_mode' in interface:
-            interface['slaves'] = [
+            interface['subordinates'] = [
                 sys_interfaces[mac] for mac in interface['raw_macs']]
 
         if 'raw_macs' in interface:
@@ -669,10 +669,10 @@ mac_{name}="{hwaddr}"
 """.format(name=iname, hwaddr=interface['mac_address'])
             _enable_gentoo_interface(iname)
         if 'bond_mode' in interface:
-            slaves = ' '.join(interface['slaves'])
-            results += """slaves_{name}="{slaves}"
+            subordinates = ' '.join(interface['subordinates'])
+            results += """subordinates_{name}="{subordinates}"
 mode_{name}="{mode}"
-""".format(name=iname, slaves=slaves, mode=interface['bond_mode'])
+""".format(name=iname, subordinates=subordinates, mode=interface['bond_mode'])
 
     full_results = "# Automatically generated, do not edit\n"
     if vlans:
@@ -693,7 +693,7 @@ def _setup_gentoo_network_init(sys_interface, interfaces):
                 vlan=interface['vlan_id'])
             log.debug('vlan {vlan} found, interface named {name}'.
                       format(vlan=interface['vlan_id'], name=interface_name))
-        if 'bond_master' in interface:
+        if 'bond_main' in interface:
             continue
         _create_gentoo_net_symlink_and_enable(interface_name)
     if not interfaces:
@@ -726,7 +726,7 @@ def write_gentoo_interfaces(interfaces, sys_interfaces):
             continue
 
         if 'bond_mode' in interface:
-            interface['slaves'] = [
+            interface['subordinates'] = [
                 sys_interfaces[mac] for mac in interface['raw_macs']]
 
         if 'raw_macs' in interface:
@@ -781,13 +781,13 @@ def _write_debian_bond_conf(interface_name, interface, sys_interfaces):
         interface.get('bond_lacp_rate', 'slow'))
     result += "    bond-xmit_hash_policy {0}\n".format(
         interface.get('bond_xmit_hash_policy', 'layer2'))
-    slave_devices = [sys_interfaces[mac]
+    subordinate_devices = [sys_interfaces[mac]
                      for mac in interface['raw_macs']]
-    slaves = ' '.join(slave_devices)
-    result += "    bond-slaves none\n"
-    result += "    post-up ifenslave {0} {1}\n".format(interface_name, slaves)
-    result += "    pre-down ifenslave -d {0} {1}\n".format(
-        interface_name, slaves)
+    subordinates = ' '.join(subordinate_devices)
+    result += "    bond-subordinates none\n"
+    result += "    post-up ifensubordinate {0} {1}\n".format(interface_name, subordinates)
+    result += "    pre-down ifensubordinate -d {0} {1}\n".format(
+        interface_name, subordinates)
     return result
 
 
@@ -894,9 +894,9 @@ def write_debian_interfaces(interfaces, sys_interfaces):
                     result += route_del.format(
                         net=route['network'], mask=_netmask,
                         gw=route['gateway'], interface=interface_name)
-        if 'bond_master' in interface:
-            result += "    bond-master {0}\n".format(
-                interface['bond_master'])
+        if 'bond_main' in interface:
+            result += "    bond-main {0}\n".format(
+                interface['bond_main'])
         if 'bond_mode' in interface:
             result += _write_debian_bond_conf(interface_name,
                                               interface,
@@ -968,7 +968,7 @@ def get_config_drive_interfaces(net):
         phy_macs = []
         for phy in link['bond_links']:
             phy_link = phys[phy]
-            phy_link['bond_master'] = link['id']
+            phy_link['bond_main'] = link['id']
             if phy in phys:
                 phy_macs.append(phy_link['ethernet_mac_address'].lower())
         link['raw_macs'] = phy_macs
@@ -1140,7 +1140,7 @@ def get_sys_interfaces(interface, args):
     log.debug("Probing system interfaces")
     sys_root = os.path.join(args.root, 'sys/class/net')
 
-    ignored_interfaces = ('sit', 'tunl', 'bonding_master', 'teql',
+    ignored_interfaces = ('sit', 'tunl', 'bonding_main', 'teql',
                           'ip6gre', 'ip6_vti', 'ip6tnl', 'bond', 'lo')
     sys_interfaces = {}
     if interface is not None:

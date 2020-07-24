@@ -75,12 +75,12 @@ class GitFastExporterTests(TestCase):
         c.message = b"msg"
         c.tree = t.id
         self.store.add_objects([(b, None), (t, None), (c, None)])
-        self.fastexporter.emit_commit(c, b"refs/heads/master")
+        self.fastexporter.emit_commit(c, b"refs/heads/main")
         self.assertEqual(b"""blob
 mark :1
 data 3
 FOO
-commit refs/heads/master
+commit refs/heads/main
 mark :2
 author Jelmer <jelmer@host> 1271345553 +0000
 committer Jelmer <jelmer@host> 1271345553 +0000
@@ -168,7 +168,7 @@ mark :1
 data 11
 text for a
 
-commit refs/heads/master
+commit refs/heads/main
 mark :2
 committer Joe Foo <joe@foo.com> 1288287382 +0000
 data 20

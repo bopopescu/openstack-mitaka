@@ -77,7 +77,7 @@ class DevhelpBuilder(StandaloneHTMLBuilder):
         chapters = etree.SubElement(root, 'chapters')
 
         tocdoc = self.env.get_and_resolve_doctree(
-            self.config.master_doc, self, prune_toctrees=False)
+            self.config.main_doc, self, prune_toctrees=False)
 
         def write_toc(node, parent):
             if isinstance(node, addnodes.compact_paragraph) or \

@@ -105,7 +105,7 @@ def get_file_data(filename):
 
 def interface_mac(name):
     try:  # If the iface is part of a Linux bond, the real MAC is only here.
-        with open('/sys/class/net/%s/bonding_slave/perm_hwaddr' % name,
+        with open('/sys/class/net/%s/bonding_subordinate/perm_hwaddr' % name,
                   'r') as f:
             return f.read().rstrip()
     except IOError:
@@ -623,7 +623,7 @@ def _get_vpp_bond(member_ids):
                                     'hardware-interfaces', 'bond', 'brief',
                                     check_exit_code=False)
     logger.debug('vppctl show hardware-interfaces bond brief\n%s' % out)
-    m = re.search(r'^\s*(BondEthernet\d+)\s+(\d+)\s+.+Slave-Idx:\s+%s\s*$' %
+    m = re.search(r'^\s*(BondEthernet\d+)\s+(\d+)\s+.+Subordinate-Idx:\s+%s\s*$' %
                   member_ids_str,
                   out,
                   re.MULTILINE)
@@ -713,25 +713,25 @@ def generate_vpp_config(vpp_config_path, vpp_interfaces, vpp_bonds):
 
     # Add bond config to 'dpdk' section
     for vpp_bond in vpp_bonds:
-        slave_str = ''
+        subordinate_str = ''
         for member in vpp_bond.members:
-            slave_str += ",slave=%s" % member.pci_dev
+            subordinate_str += ",subordinate=%s" % member.pci_dev
         if vpp_bond.bonding_options:
             options_str = ',' + vpp_bond.bonding_options.strip(' ,')
         else:
             options_str = ''
 
-        if slave_str:
+        if subordinate_str:
             m = re.search(r'^\s*vdev\s+%s.*$' % vpp_bond.name,
                           data, re.MULTILINE)
             if m:
                 data = re.sub(m.group(0), r'  vdev %s%s%s'
-                              % (vpp_bond.name, slave_str, options_str),
+                              % (vpp_bond.name, subordinate_str, options_str),
                               data)
             else:
                 data = re.sub(r'(^\s*dpdk\s*\{)',
                               r'\1\n  vdev %s%s%s'
-                              % (vpp_bond.name, slave_str, options_str),
+                              % (vpp_bond.name, subordinate_str, options_str),
                               data,
                               flags=re.MULTILINE)
 

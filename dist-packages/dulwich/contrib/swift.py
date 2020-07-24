@@ -889,7 +889,7 @@ class SwiftInfoRefsContainer(InfoRefsContainer):
 
     def allkeys(self):
         try:
-            self._refs['HEAD'] = self._refs['refs/heads/master']
+            self._refs['HEAD'] = self._refs['refs/heads/main']
         except KeyError:
             pass
         return self._refs.keys()

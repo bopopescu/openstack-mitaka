@@ -477,9 +477,9 @@ class BuildEnvironment:
                 yield docname
                 self.read_doc(docname, app=app)
 
-            if config.master_doc not in self.all_docs:
-                self.warn(None, 'master file %s not found' %
-                          self.doc2path(config.master_doc))
+            if config.main_doc not in self.all_docs:
+                self.warn(None, 'main file %s not found' %
+                          self.doc2path(config.main_doc))
 
             self.app = None
             if app:
@@ -1060,7 +1060,7 @@ class BuildEnvironment:
 
     def get_toctree_for(self, docname, builder, collapse, **kwds):
         """Return the global TOC nodetree."""
-        doctree = self.get_doctree(self.config.master_doc)
+        doctree = self.get_doctree(self.config.main_doc)
         toctrees = []
         if 'includehidden' not in kwds:
             kwds['includehidden'] = True
@@ -1662,15 +1662,15 @@ class BuildEnvironment:
                     collect([(docname, subindex)] + parents,
                             parents_set.union([docname]), *args)
             relations[docname] = [parents[0][0], previous, next]
-        collect([(None, 0)], set(), self.config.master_doc, None, None)
+        collect([(None, 0)], set(), self.config.main_doc, None, None)
         return relations
 
     def check_consistency(self):
         """Do consistency checks."""
         for docname in sorted(self.all_docs):
             if docname not in self.files_to_rebuild:
-                if docname == self.config.master_doc:
-                    # the master file is not included anywhere ;)
+                if docname == self.config.main_doc:
+                    # the main file is not included anywhere ;)
                     continue
                 if 'orphan' in self.metadata[docname]:
                     continue

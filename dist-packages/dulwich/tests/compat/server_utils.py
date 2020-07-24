@@ -87,7 +87,7 @@ class ServerTests(object):
 
     def branch_args(self, branches=None):
         if branches is None:
-            branches = ['master', 'branch']
+            branches = ['main', 'branch']
         return ['%s:%s' % (b, b) for b in branches]
 
     def test_push_to_dulwich(self):
@@ -115,7 +115,7 @@ class ServerTests(object):
         self.assertReposEqual(self._old_repo, self._new_repo)
         port = self._start_server(self._old_repo)
 
-        run_git_or_fail(['push', self.url(port), ":master"],
+        run_git_or_fail(['push', self.url(port), ":main"],
                         cwd=self._new_repo.path)
 
         self.assertEqual(
@@ -259,7 +259,7 @@ class ServerTests(object):
             'issue88_expect_ack_nak_client.export')
         port = self._start_server(self._source_repo)
 
-        run_git_or_fail(['fetch', self.url(port), 'master'],
+        run_git_or_fail(['fetch', self.url(port), 'main'],
                         cwd=self._client_repo.path)
         self.assertObjectStoreEqual(
             self._source_repo.object_store,
@@ -276,7 +276,7 @@ class ServerTests(object):
         self.assertRaises(
             KeyError, self._client_repo.get_object,
             b'02a14da1fc1fc13389bbf32f0af7d8899f2b2323')
-        run_git_or_fail(['fetch', self.url(port), 'master'],
+        run_git_or_fail(['fetch', self.url(port), 'main'],
                         cwd=self._client_repo.path)
         self.assertEqual(b'commit', self._client_repo.get_object(
             b'02a14da1fc1fc13389bbf32f0af7d8899f2b2323').type_name)
@@ -290,7 +290,7 @@ class ServerTests(object):
             'issue88_expect_ack_nak_server.export')
         port = self._start_server(self._source_repo)
 
-        run_git_or_fail(['push', self.url(port), 'master'],
+        run_git_or_fail(['push', self.url(port), 'main'],
                         cwd=self._client_repo.path)
         self.assertReposEqual(self._source_repo, self._client_repo)
 

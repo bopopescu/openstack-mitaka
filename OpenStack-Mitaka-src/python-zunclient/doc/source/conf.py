@@ -38,8 +38,8 @@ html_last_updated_fmt = '%Y-%m-%d %H:%M'
 # The suffix of source filenames.
 source_suffix = '.rst'
 
-# The master toctree document.
-master_doc = 'index'
+# The main toctree document.
+main_doc = 'index'
 
 # General information about the project.
 project = u'python-zunclient'

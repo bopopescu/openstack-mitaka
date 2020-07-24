@@ -234,7 +234,7 @@ class HTMLHelpBuilder(StandaloneHTMLBuilder):
                                                     '%s.html' % indexname))
             # the TOC
             tocdoc = self.env.get_and_resolve_doctree(
-                self.config.master_doc, self, prune_toctrees=False)
+                self.config.main_doc, self, prune_toctrees=False)
             def write_toc(node, ullevel=0):
                 if isinstance(node, nodes.list_item):
                     f.write('<LI> ')

@@ -606,7 +606,7 @@ class BasicTest(Base):
             raw_results,
         )
 
-    def test_stop_on_master_with_other_branch(self):
+    def test_stop_on_main_with_other_branch(self):
         self._make_python_package()
         self._add_notes_file()
         self.repo.git('tag', '-s', '-m', 'first tag', '1.0.0')
@@ -632,7 +632,7 @@ class BasicTest(Base):
             results,
         )
 
-    def test_stop_on_master_without_limits_or_branches(self):
+    def test_stop_on_main_without_limits_or_branches(self):
         self._make_python_package()
         f1 = self._add_notes_file()
         self.repo.git('tag', '-s', '-m', 'first tag', '1.0.0')
@@ -957,15 +957,15 @@ class PreReleaseTest(Base):
 class MergeCommitTest(Base):
 
     def test_1(self):
-        # Create changes on master and in the branch
+        # Create changes on main and in the branch
         # in order so the history is "normal"
         n1 = self._add_notes_file()
         self.repo.git('tag', '-s', '-m', 'first tag', '1.0.0')
         self.repo.git('checkout', '-b', 'test_merge_commit')
         n2 = self._add_notes_file()
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         self.repo.add_file('ignore-1.txt')
-        # Merge the branch into master.
+        # Merge the branch into main.
         self.repo.git('merge', '--no-ff', 'test_merge_commit')
         time.sleep(0.1)  # force a delay between commits
         self.repo.add_file('ignore-2.txt')
@@ -992,11 +992,11 @@ class MergeCommitTest(Base):
         self.repo.add_file('ignore-0.txt')
         self.repo.git('checkout', '-b', 'test_merge_commit')
         n1 = self._add_notes_file()
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         n2 = self._add_notes_file()
         self.repo.git('tag', '-s', '-m', 'first tag', '1.0.0')
         self.repo.add_file('ignore-1.txt')
-        # Merge the branch into master.
+        # Merge the branch into main.
         self.repo.git('merge', '--no-ff', 'test_merge_commit')
         time.sleep(0.1)  # force a delay between commits
         self.repo.git('show')
@@ -1026,7 +1026,7 @@ class MergeCommitTest(Base):
         self.repo.add_file('ignore-0.txt')
         self.repo.git('checkout', '-b', 'test_merge_commit')
         n1 = self._add_notes_file()
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         n2 = self._add_notes_file()
         self.repo.git('tag', '-s', '-m', 'first tag', '1.0.0')
         self.repo.add_file('ignore-1.txt')
@@ -1063,7 +1063,7 @@ class MergeCommitTest(Base):
         self.repo.add_file('ignore-0.txt')
         self.repo.git('checkout', '-b', 'test_merge_commit')
         n1 = self._add_notes_file()
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         n2 = self._add_notes_file()
         self.repo.git('tag', '-s', '-m', 'first tag', '1.0.0')
         self.repo.add_file('ignore-1.txt')
@@ -1105,12 +1105,12 @@ class NullMergeTest(Base):
         self.n2 = self._add_notes_file()
         self.repo.git('tag', '-s', '-m', 'second tag', '2.0.0')
 
-        # Move back to master and advance it.
-        self.repo.git('checkout', 'master')
+        # Move back to main and advance it.
+        self.repo.git('checkout', 'main')
         self.repo.add_file('ignore-1.txt')
         self.n3 = self._add_notes_file()
 
-        # Merge only the tag from the first branch back into master.
+        # Merge only the tag from the first branch back into main.
         self.repo.git(
             'merge', '--no-ff', '--strategy', 'ours', '2.0.0',
         )
@@ -1122,7 +1122,7 @@ class NullMergeTest(Base):
         self.repo.git('log', '--decorate', '--oneline', '--graph', '--all')
         # The results should look like:
         #
-        # * afea344 (HEAD -> master, tag: 3.0.0) add slug-0000000000000004.yaml
+        # * afea344 (HEAD -> main, tag: 3.0.0) add slug-0000000000000004.yaml
         # *   7bb295c Merge tag '2.0.0'
         # |\
         # | * 260c80b (tag: 2.0.0, test_ignore_null_merge) add slug-0000000000000002.yaml  # noqa
@@ -1196,52 +1196,52 @@ class BranchBaseTest(Base):
         self._add_notes_file('slug3')
         self.repo.git('tag', '-s', '-m', 'first tag', '3.0.0')
         self.repo.git('checkout', '2.0.0')
-        self.repo.git('branch', 'not-master')
-        self.repo.git('checkout', 'master')
+        self.repo.git('branch', 'not-main')
+        self.repo.git('checkout', 'main')
         self.scanner = scanner.Scanner(self.c)
 
     def test_current_branch_no_extra_commits(self):
         # checkout the branch and then ask for its base
-        self.repo.git('checkout', 'not-master')
+        self.repo.git('checkout', 'not-main')
         self.assertEqual(
             '2.0.0',
-            self.scanner._get_branch_base('not-master'),
+            self.scanner._get_branch_base('not-main'),
         )
 
     def test_current_branch_extra_commit(self):
         # checkout the branch and then ask for its base
-        self.repo.git('checkout', 'not-master')
+        self.repo.git('checkout', 'not-main')
         self._add_notes_file('slug4')
         self.assertEqual(
             '2.0.0',
-            self.scanner._get_branch_base('not-master'),
+            self.scanner._get_branch_base('not-main'),
         )
 
     def test_alternate_branch_no_extra_commits(self):
-        # checkout master and then ask for the alternate branch base
-        self.repo.git('checkout', 'master')
+        # checkout main and then ask for the alternate branch base
+        self.repo.git('checkout', 'main')
         self.assertEqual(
             '2.0.0',
-            self.scanner._get_branch_base('not-master'),
+            self.scanner._get_branch_base('not-main'),
         )
 
     def test_alternate_branch_extra_commit(self):
-        # checkout master and then ask for the alternate branch base
-        self.repo.git('checkout', 'not-master')
+        # checkout main and then ask for the alternate branch base
+        self.repo.git('checkout', 'not-main')
         self._add_notes_file('slug4')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         self.assertEqual(
             '2.0.0',
-            self.scanner._get_branch_base('not-master'),
+            self.scanner._get_branch_base('not-main'),
         )
 
     def test_no_tag_at_base(self):
         # remove the tag at the branch point
         self.repo.git('tag', '-d', '2.0.0')
         self._add_notes_file('slug4')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         self.assertIsNone(
-            self.scanner._get_branch_base('not-master')
+            self.scanner._get_branch_base('not-main')
         )
 
 
@@ -1277,11 +1277,11 @@ class BranchTest(Base):
             results,
         )
 
-    def test_files_stable_from_master(self):
+    def test_files_stable_from_main(self):
         self.repo.git('checkout', '2.0.0')
         self.repo.git('checkout', '-b', 'stable/2')
         f21 = self._add_notes_file('slug21')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         log_text = self.repo.git('log', '--pretty=%x00%H %d', '--name-only',
                                  'stable/2')
         self.addDetail('git log', text_content(log_text))
@@ -1302,11 +1302,11 @@ class BranchTest(Base):
             results,
         )
 
-    def test_files_stable_from_master_no_stop_base(self):
+    def test_files_stable_from_main_no_stop_base(self):
         self.repo.git('checkout', '2.0.0')
         self.repo.git('checkout', '-b', 'stable/2')
         f21 = self._add_notes_file('slug21')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         log_text = self.repo.git('log', '--pretty=%x00%H %d', '--name-only',
                                  'stable/2')
         self.addDetail('git log', text_content(log_text))
@@ -1334,7 +1334,7 @@ class BranchTest(Base):
     def test_pre_release_branch_no_collapse(self):
         f4 = self._add_notes_file('slug4')
         self.repo.git('tag', '-s', '-m', 'pre-release', '4.0.0.0rc1')
-        # Add a commit on master after the tag
+        # Add a commit on main after the tag
         self._add_notes_file('slug5')
         # Move back to the tag and create the branch
         self.repo.git('checkout', '4.0.0.0rc1')
@@ -1347,7 +1347,7 @@ class BranchTest(Base):
         )
         self.addDetail('git log', text_content(log_text))
         rev_list = self.repo.git('rev-list', '--first-parent',
-                                 '^stable/4', 'master')
+                                 '^stable/4', 'main')
         self.addDetail('rev-list', text_content(rev_list))
         self.c.override(
             branch='stable/4',
@@ -1370,7 +1370,7 @@ class BranchTest(Base):
     def test_pre_release_branch_collapse(self):
         f4 = self._add_notes_file('slug4')
         self.repo.git('tag', '-s', '-m', 'pre-release', '4.0.0.0rc1')
-        # Add a commit on master after the tag
+        # Add a commit on main after the tag
         self._add_notes_file('slug5')
         # Move back to the tag and create the branch
         self.repo.git('checkout', '4.0.0.0rc1')
@@ -1384,7 +1384,7 @@ class BranchTest(Base):
         )
         self.addDetail('git log', text_content(log_text))
         rev_list = self.repo.git('rev-list', '--first-parent',
-                                 '^stable/4', 'master')
+                                 '^stable/4', 'main')
         self.addDetail('rev-list', text_content(rev_list))
         self.c.override(
             branch='stable/4',
@@ -1408,7 +1408,7 @@ class BranchTest(Base):
         self.repo.git('tag', '-s', '-m', 'beta', '4.0.0.0b1')
         self.repo.add_file('not-a-release-note.txt')
         self.repo.git('tag', '-s', '-m', 'pre-release', '4.0.0.0rc1')
-        # Add a commit on master after the tag
+        # Add a commit on main after the tag
         self._add_notes_file('slug5')
         # Move back to the tag and create the branch
         self.repo.git('checkout', '4.0.0.0rc1')
@@ -1422,7 +1422,7 @@ class BranchTest(Base):
         )
         self.addDetail('git log', text_content(log_text))
         rev_list = self.repo.git('rev-list', '--first-parent',
-                                 '^stable/4', 'master')
+                                 '^stable/4', 'main')
         self.addDetail('rev-list', text_content(rev_list))
         self.c.override(
             branch='stable/4',
@@ -1444,7 +1444,7 @@ class BranchTest(Base):
     def test_full_release_branch(self):
         f4 = self._add_notes_file('slug4')
         self.repo.git('tag', '-s', '-m', 'release', '4.0.0')
-        # Add a commit on master after the tag
+        # Add a commit on main after the tag
         self._add_notes_file('slug5')
         # Move back to the tag and create the branch
         self.repo.git('checkout', '4.0.0')
@@ -1457,7 +1457,7 @@ class BranchTest(Base):
         )
         self.addDetail('git log', text_content(log_text))
         rev_list = self.repo.git('rev-list', '--first-parent',
-                                 '^stable/4', 'master')
+                                 '^stable/4', 'main')
         self.addDetail('rev-list', text_content(rev_list))
         self.c.override(
             branch='stable/4',
@@ -1476,9 +1476,9 @@ class BranchTest(Base):
             results,
         )
 
-    def test_branch_tip_of_master(self):
-        # We have branched from master, but not added any commits to
-        # master.
+    def test_branch_tip_of_main(self):
+        # We have branched from main, but not added any commits to
+        # main.
         f4 = self._add_notes_file('slug4')
         self.repo.git('tag', '-s', '-m', 'release', '4.0.0')
         self.repo.git('checkout', '-b', 'stable/4')
@@ -1491,7 +1491,7 @@ class BranchTest(Base):
         )
         self.addDetail('git log', text_content(log_text))
         rev_list = self.repo.git('rev-list', '--first-parent',
-                                 '^stable/4', 'master')
+                                 '^stable/4', 'main')
         self.addDetail('rev-list', text_content(rev_list))
         self.c.override(
             branch='stable/4',
@@ -1511,8 +1511,8 @@ class BranchTest(Base):
         )
 
     def test_branch_no_more_commits(self):
-        # We have branched from master, but not added any commits to
-        # our branch or to master.
+        # We have branched from main, but not added any commits to
+        # our branch or to main.
         f4 = self._add_notes_file('slug4')
         self.repo.git('tag', '-s', '-m', 'release', '4.0.0')
         self.repo.git('checkout', '-b', 'stable/4')
@@ -1523,7 +1523,7 @@ class BranchTest(Base):
         )
         self.addDetail('git log', text_content(log_text))
         rev_list = self.repo.git('rev-list', '--first-parent',
-                                 '^stable/4', 'master')
+                                 '^stable/4', 'main')
         self.addDetail('rev-list', text_content(rev_list))
         self.c.override(
             branch='stable/4',
@@ -1544,7 +1544,7 @@ class BranchTest(Base):
     def test_remote_branches(self):
         self.repo.git('checkout', '2.0.0')
         self.repo.git('checkout', '-b', 'stable/2')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         scanner1 = scanner.Scanner(self.c)
         head1 = scanner1._get_ref('stable/2')
         self.assertIsNotNone(head1)
@@ -1580,7 +1580,7 @@ class BranchTest(Base):
     def test_remote_branch_without_prefix(self):
         self.repo.git('checkout', '2.0.0')
         self.repo.git('checkout', '-b', 'stable/2')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         scanner1 = scanner.Scanner(self.c)
         head1 = scanner1._get_ref('stable/2')
         self.assertIsNotNone(head1)
@@ -1613,13 +1613,13 @@ class BranchTest(Base):
         self.assertIsNotNone(head2)
         self.assertEqual(head1, head2)
 
-    def test_modify_old_branch_note_on_master(self):
-        # Modify a note from a stable branch on master and ensure that
-        # the note does not appear in the scanner output from master.
+    def test_modify_old_branch_note_on_main(self):
+        # Modify a note from a stable branch on main and ensure that
+        # the note does not appear in the scanner output from main.
         # This should replicate the problem described in bug #1682796
         self.repo.git('checkout', '2.0.0')
         self.repo.git('branch', 'stable/2')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         with open(os.path.join(self.reporoot, self.f1), 'w') as f:
             f.write('new file contents')
         self.repo.commit('update %s' % self.f1)
@@ -1653,7 +1653,7 @@ class ScanStopPointPrereleaseVersionsTest(Base):
         self._add_notes_file('slug2')
         self._add_notes_file('slug3')
         self.repo.git('tag', '-s', '-m', 'second tag', '1.0.0')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         self._add_notes_file('slug4')
         self._add_notes_file('slug5')
         self.repo.git('tag', '-s', '-m', 'second series', '2.0.0.0b3')
@@ -1664,22 +1664,22 @@ class ScanStopPointPrereleaseVersionsTest(Base):
         self._add_notes_file('slug8')
         self._add_notes_file('slug9')
         self.repo.git('tag', '-s', '-m', 'third tag', '2.0.0')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
 
     def test_beta_collapse(self):
         self.assertEqual(
             '1.0.0.0rc1',
             self.scanner._find_scan_stop_point(
                 '2.0.0.0b3', ['2.0.0.0b3', '1.0.0.0rc1'],
-                True, 'master'),
+                True, 'main'),
         )
 
-    def test_rc_collapse_master(self):
+    def test_rc_collapse_main(self):
         self.assertEqual(
             '1.0.0.0rc1',
             self.scanner._find_scan_stop_point(
                 '2.0.0.0rc1', ['2.0.0.0rc1', '2.0.0.0b3', '1.0.0.0rc1'],
-                True, 'master'),
+                True, 'main'),
         )
 
     def test_rc_collapse_branch(self):
@@ -1695,7 +1695,7 @@ class ScanStopPointPrereleaseVersionsTest(Base):
             '2.0.0.0b3',
             self.scanner._find_scan_stop_point(
                 '2.0.0.0rc1', ['2.0.0.0rc1', '2.0.0.0b3', '1.0.0.0rc1'],
-                False, 'master'),
+                False, 'main'),
         )
 
     def test_stable_branch_with_collapse(self):
@@ -1741,7 +1741,7 @@ class ScanStopPointRegularVersionsTest(Base):
         self._add_notes_file('slug2')
         self._add_notes_file('slug3')
         self.repo.git('tag', '-s', '-m', 'second tag', '1.0.1')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
         self._add_notes_file('slug4')
         self._add_notes_file('slug5')
         self.repo.git('tag', '-s', '-m', 'second series', '2.0.0')
@@ -1752,7 +1752,7 @@ class ScanStopPointRegularVersionsTest(Base):
         self._add_notes_file('slug8')
         self._add_notes_file('slug9')
         self.repo.git('tag', '-s', '-m', 'third tag', '2.0.2')
-        self.repo.git('checkout', 'master')
+        self.repo.git('checkout', 'main')
 
     def test_invalid_earliest_version(self):
         self.assertIsNone(
@@ -1854,7 +1854,7 @@ class TagsTest(Base):
         self._add_notes_file('slug3')
         self.repo.git('tag', '-s', '-m', 'first tag', '3.0.0')
 
-    def test_master(self):
+    def test_main(self):
         self.scanner = scanner.Scanner(self.c)
         results = self.scanner._get_tags_on_branch(None)
         self.assertEqual(
@@ -1868,14 +1868,14 @@ class TagsTest(Base):
         expected = self.scanner._repo.head()
         self.assertEqual(expected, ref)
 
-    def test_not_master(self):
+    def test_not_main(self):
         self.repo.git('checkout', '2.0.0')
-        self.repo.git('checkout', '-b', 'not-master')
+        self.repo.git('checkout', '-b', 'not-main')
         self._add_notes_file('slug4')
-        self.repo.git('tag', '-s', '-m', 'not on master', '2.0.1')
-        self.repo.git('checkout', 'master')
+        self.repo.git('tag', '-s', '-m', 'not on main', '2.0.1')
+        self.repo.git('checkout', 'main')
         self.scanner = scanner.Scanner(self.c)
-        results = self.scanner._get_tags_on_branch('not-master')
+        results = self.scanner._get_tags_on_branch('not-main')
         self.assertEqual(
             ['2.0.1', '2.0.0', '1.0.0'],
             results,

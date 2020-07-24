@@ -1895,7 +1895,7 @@ class TestIfcfgNetConfigApply(base.TestCase):
         self.provider.apply(activate=False)
         self.assertEqual([], self.ifup_interface_names)
 
-    def test_bond_active_slave(self):
+    def test_bond_active_subordinate(self):
         # setup and apply a bond
         interface1 = objects.Interface('em1')
         interface2 = objects.Interface('em2', primary=True)
@@ -1905,7 +1905,7 @@ class TestIfcfgNetConfigApply(base.TestCase):
         self.provider.add_interface(interface2)
         self.provider.add_bond(bond)
         self.provider.apply()
-        ovs_appctl_cmds = '/bin/ovs-appctl bond/set-active-slave bond1 em2'
+        ovs_appctl_cmds = '/bin/ovs-appctl bond/set-active-subordinate bond1 em2'
         self.assertIn(ovs_appctl_cmds, self.ovs_appctl_cmds)
 
     def test_bond_active_ordering(self):
@@ -1918,7 +1918,7 @@ class TestIfcfgNetConfigApply(base.TestCase):
         self.provider.add_interface(interface2)
         self.provider.add_bond(bond)
         self.provider.apply()
-        ovs_appctl_cmds = '/bin/ovs-appctl bond/set-active-slave bond1 em1'
+        ovs_appctl_cmds = '/bin/ovs-appctl bond/set-active-subordinate bond1 em1'
         self.assertIn(ovs_appctl_cmds, self.ovs_appctl_cmds)
 
     def test_reconfigure_and_apply(self):

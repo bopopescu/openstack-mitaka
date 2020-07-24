@@ -302,7 +302,7 @@ class Builder(object):
             for tocdocname in self.env.files_to_rebuild.get(docname, []):
                 if tocdocname in self.env.found_docs:
                     docnames.add(tocdocname)
-        docnames.add(self.config.master_doc)
+        docnames.add(self.config.main_doc)
 
         self.info(bold('preparing documents... '), nonl=True)
         self.prepare_writing(docnames)

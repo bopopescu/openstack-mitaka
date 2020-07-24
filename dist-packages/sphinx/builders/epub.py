@@ -239,27 +239,27 @@ class EpubBuilder(StandaloneHTMLBuilder):
         return result
 
     def get_toc(self):
-        """Get the total table of contents, containing the master_doc
+        """Get the total table of contents, containing the main_doc
         and pre and post files not managed by sphinx.
         """
-        doctree = self.env.get_and_resolve_doctree(self.config.master_doc,
+        doctree = self.env.get_and_resolve_doctree(self.config.main_doc,
             self, prune_toctrees=False, includehidden=True)
         self.refnodes = self.get_refnodes(doctree, [])
-        master_dir = path.dirname(self.config.master_doc)
-        if master_dir:
-            master_dir += '/' # XXX or os.sep?
+        main_dir = path.dirname(self.config.main_doc)
+        if main_dir:
+            main_dir += '/' # XXX or os.sep?
             for item in self.refnodes:
-                item['refuri'] = master_dir + item['refuri']
+                item['refuri'] = main_dir + item['refuri']
         self.toc_add_files(self.refnodes)
 
     def toc_add_files(self, refnodes):
-        """Add the master_doc, pre and post files to a list of refnodes.
+        """Add the main_doc, pre and post files to a list of refnodes.
         """
         refnodes.insert(0, {
             'level': 1,
-            'refuri': self.esc(self.config.master_doc + '.html'),
+            'refuri': self.esc(self.config.main_doc + '.html'),
             'text': ssp(self.esc(
-                    self.env.titles[self.config.master_doc].astext()))
+                    self.env.titles[self.config.main_doc].astext()))
         })
         for file, text in reversed(self.config.epub_pre_files):
             refnodes.insert(0, {
@@ -719,7 +719,7 @@ class EpubBuilder(StandaloneHTMLBuilder):
         self.info('writing %s file...' % outname)
 
         if self.config.epub_tocscope == 'default':
-            doctree = self.env.get_and_resolve_doctree(self.config.master_doc,
+            doctree = self.env.get_and_resolve_doctree(self.config.main_doc,
                 self, prune_toctrees=False, includehidden=False)
             refnodes = self.get_refnodes(doctree, [])
             self.toc_add_files(refnodes)

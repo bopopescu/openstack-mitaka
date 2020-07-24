@@ -77,7 +77,7 @@ templates_path = ['_templates']
 
 source_suffix = '.rst'
 
-master_doc = 'index'
+main_doc = 'index'
 
 project = u'python-troveclient'
 copyright = u'2014, OpenStack Foundation'

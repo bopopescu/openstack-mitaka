@@ -131,12 +131,12 @@ class SwiftRepoSmokeTest(unittest.TestCase):
 
     def test_push_commit(self):
         def determine_wants(*args):
-            return {"refs/heads/master": local_repo.refs["HEAD"]}
+            return {"refs/heads/main": local_repo.refs["HEAD"]}
 
         local_repo = repo.Repo.init(self.temp_d, mkdir=True)
         # Nothing in the staging area
         local_repo.do_commit('Test commit', 'fbo@localhost')
-        sha = local_repo.refs.read_loose_ref('refs/heads/master')
+        sha = local_repo.refs.read_loose_ref('refs/heads/main')
         swift.SwiftRepo.init_bare(self.scon, self.conf)
         tcp_client = client.TCPGitClient(self.server_address,
                                          port=self.port)
@@ -144,7 +144,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
                              determine_wants,
                              local_repo.object_store.generate_pack_data)
         swift_repo = swift.SwiftRepo("fakerepo", self.conf)
-        remote_sha = swift_repo.refs.read_loose_ref('refs/heads/master')
+        remote_sha = swift_repo.refs.read_loose_ref('refs/heads/main')
         self.assertEqual(sha, remote_sha)
 
     def test_push_branch(self):
@@ -171,8 +171,8 @@ class SwiftRepoSmokeTest(unittest.TestCase):
         def determine_wants(*args):
             return {"refs/heads/mybranch":
                     local_repo.refs["refs/heads/mybranch"],
-                    "refs/heads/master":
-                    local_repo.refs["refs/heads/master"],
+                    "refs/heads/main":
+                    local_repo.refs["refs/heads/main"],
                     "refs/heads/pullr-108":
                     local_repo.refs["refs/heads/pullr-108"]}
 
@@ -180,7 +180,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
         # Nothing in the staging area
         local_shas = {}
         remote_shas = {}
-        for branch in ('master', 'mybranch', 'pullr-108'):
+        for branch in ('main', 'mybranch', 'pullr-108'):
             local_shas[branch] = local_repo.do_commit(
                 'Test commit %s' % branch, 'fbo@localhost',
                 ref='refs/heads/%s' % branch)
@@ -191,14 +191,14 @@ class SwiftRepoSmokeTest(unittest.TestCase):
                              determine_wants,
                              local_repo.object_store.generate_pack_data)
         swift_repo = swift.SwiftRepo("fakerepo", self.conf)
-        for branch in ('master', 'mybranch', 'pullr-108'):
+        for branch in ('main', 'mybranch', 'pullr-108'):
             remote_shas[branch] = swift_repo.refs.read_loose_ref(
                 'refs/heads/%s' % branch)
         self.assertDictEqual(local_shas, remote_shas)
 
     def test_push_data_branch(self):
         def determine_wants(*args):
-            return {"refs/heads/master": local_repo.refs["HEAD"]}
+            return {"refs/heads/main": local_repo.refs["HEAD"]}
         local_repo = repo.Repo.init(self.temp_d, mkdir=True)
         os.mkdir(os.path.join(self.temp_d, "dir"))
         files = ('testfile', 'testfile2', 'dir/testfile3')
@@ -208,7 +208,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
             i += 1
         local_repo.stage(files)
         local_repo.do_commit('Test commit', 'fbo@localhost',
-                             ref='refs/heads/master')
+                             ref='refs/heads/main')
         swift.SwiftRepo.init_bare(self.scon, self.conf)
         tcp_client = client.TCPGitClient(self.server_address,
                                          port=self.port)
@@ -216,7 +216,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
                              determine_wants,
                              local_repo.object_store.generate_pack_data)
         swift_repo = swift.SwiftRepo("fakerepo", self.conf)
-        commit_sha = swift_repo.refs.read_loose_ref('refs/heads/master')
+        commit_sha = swift_repo.refs.read_loose_ref('refs/heads/main')
         otype, data = swift_repo.object_store.get_raw(commit_sha)
         commit = objects.ShaFile.from_raw_string(otype, data)
         otype, data = swift_repo.object_store.get_raw(commit._tree)
@@ -240,7 +240,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
         remote_refs = tcp_client.fetch(self.fakerepo, local_repo)
         files = (os.path.join(self.temp_d, 'testfile'),
                  os.path.join(self.temp_d, 'testfile2'))
-        local_repo["HEAD"] = remote_refs["refs/heads/master"]
+        local_repo["HEAD"] = remote_refs["refs/heads/main"]
         indexfile = local_repo.index_path()
         tree = local_repo["HEAD"].tree
         index.build_index_from_tree(local_repo.path, indexfile,
@@ -249,7 +249,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
             self.assertEqual(os.path.isfile(f), True)
 
         def determine_wants(*args):
-            return {"refs/heads/master": local_repo.refs["HEAD"]}
+            return {"refs/heads/main": local_repo.refs["HEAD"]}
         os.mkdir(os.path.join(self.temp_d, "test"))
         files = ('testfile11', 'testfile22', 'test/testfile33')
         i = 0
@@ -258,7 +258,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
             i += 1
         local_repo.stage(files)
         local_repo.do_commit('Test commit', 'fbo@localhost',
-                             ref='refs/heads/master')
+                             ref='refs/heads/main')
         tcp_client.send_pack("/fakerepo",
                              determine_wants,
                              local_repo.object_store.generate_pack_data)
@@ -266,8 +266,8 @@ class SwiftRepoSmokeTest(unittest.TestCase):
     def test_push_remove_branch(self):
         def determine_wants(*args):
             return {"refs/heads/pullr-108": objects.ZERO_SHA,
-                    "refs/heads/master":
-                    local_repo.refs['refs/heads/master'],
+                    "refs/heads/main":
+                    local_repo.refs['refs/heads/main'],
                     "refs/heads/mybranch":
                     local_repo.refs['refs/heads/mybranch'],
                     }
@@ -283,7 +283,7 @@ class SwiftRepoSmokeTest(unittest.TestCase):
 
     def test_push_annotated_tag(self):
         def determine_wants(*args):
-            return {"refs/heads/master": local_repo.refs["HEAD"],
+            return {"refs/heads/main": local_repo.refs["HEAD"],
                     "refs/tags/v1.0": local_repo.refs["refs/tags/v1.0"]}
         local_repo = repo.Repo.init(self.temp_d, mkdir=True)
         # Nothing in the staging area

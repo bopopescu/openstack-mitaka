@@ -42,7 +42,7 @@ class TestZone(BaseDesignateTest):
         self.assertEqual(self.zone.description, zone.description)
         self.assertEqual(self.zone.email, zone.email)
         self.assertEqual(self.zone.id, zone.id)
-        self.assertEqual(self.zone.masters, zone.masters)
+        self.assertEqual(self.zone.mains, zone.mains)
         self.assertEqual(self.zone.name, zone.name)
         self.assertEqual(self.zone.pool_id, zone.pool_id)
         self.assertEqual(self.zone.project_id, zone.project_id)
@@ -107,23 +107,23 @@ class TestsPassingZoneFlags(BaseDesignateTest):
             name=zone_name,
             description='A secondary zone',
             type='SECONDARY',
-            masters='127.0.0.1',
+            mains='127.0.0.1',
         ))
         zone = fixture.zone
         self.assertEqual(zone_name, zone.name)
         self.assertEqual('A secondary zone', zone.description)
         self.assertEqual('SECONDARY', zone.type)
-        self.assertEqual('127.0.0.1', zone.masters)
+        self.assertEqual('127.0.0.1', zone.mains)
 
-    def test_zone_set_secondary_masters(self):
+    def test_zone_set_secondary_mains(self):
         fixture = self.useFixture(ZoneFixture(
             name=random_zone_name(),
             description='A secondary zone',
             type='SECONDARY',
-            masters='127.0.0.1',
+            mains='127.0.0.1',
         ))
         zone = fixture.zone
-        self.assertEqual('127.0.0.1', zone.masters)
+        self.assertEqual('127.0.0.1', zone.mains)
 
-        zone = self.clients.zone_set(zone.id, masters='127.0.0.2')
-        self.assertEqual('127.0.0.2', zone.masters)
+        zone = self.clients.zone_set(zone.id, mains='127.0.0.2')
+        self.assertEqual('127.0.0.2', zone.mains)

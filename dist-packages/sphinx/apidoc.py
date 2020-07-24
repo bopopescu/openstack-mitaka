@@ -91,9 +91,9 @@ def create_module_file(package, module, opts):
     write_file(makename(package, module), text, opts)
 
 
-def create_package_file(root, master_package, subroot, py_files, opts, subs):
+def create_package_file(root, main_package, subroot, py_files, opts, subs):
     """Build the text of the file and write the file."""
-    text = format_heading(1, '%s package' % makename(master_package, subroot))
+    text = format_heading(1, '%s package' % makename(main_package, subroot))
 
     # build a list of directories that are szvpackages (contain an INITPY file)
     subs = [sub for sub in subs if path.isfile(path.join(root, sub, INITPY))]
@@ -102,7 +102,7 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs):
         text += format_heading(2, 'Subpackages')
         text += '.. toctree::\n\n'
         for sub in subs:
-            text += '    %s.%s\n' % (makename(master_package, subroot), sub)
+            text += '    %s.%s\n' % (makename(main_package, subroot), sub)
         text += '\n'
 
     submods = [path.splitext(sub)[0] for sub in py_files
@@ -113,7 +113,7 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs):
         if opts.separatemodules:
             text += '.. toctree::\n\n'
             for submod in submods:
-                modfile = makename(master_package, makename(subroot, submod))
+                modfile = makename(main_package, makename(subroot, submod))
                 text += '   %s\n' % modfile
 
                 # generate separate file for this module
@@ -122,22 +122,22 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs):
                 else:
                     filetext = ''
                 filetext += format_directive(makename(subroot, submod),
-                                             master_package)
+                                             main_package)
                 write_file(modfile, filetext, opts)
         else:
             for submod in submods:
-                modfile = makename(master_package, makename(subroot, submod))
+                modfile = makename(main_package, makename(subroot, submod))
                 if not opts.noheadings:
                     text += format_heading(2, '%s module' % modfile)
                 text += format_directive(makename(subroot, submod),
-                                         master_package)
+                                         main_package)
                 text += '\n'
         text += '\n'
 
     text += format_heading(2, 'Module contents')
-    text += format_directive(subroot, master_package)
+    text += format_directive(subroot, main_package)
 
-    write_file(makename(master_package, subroot), text, opts)
+    write_file(makename(main_package, subroot), text, opts)
 
 
 def create_modules_toc_file(modules, opts, name='modules'):
@@ -348,14 +348,14 @@ Note: By default this script will not overwrite already created files.""")
             version = opts.version or '',
             release = opts.release or opts.version or '',
             suffix = '.' + opts.suffix,
-            master = 'index',
+            main = 'index',
             epub = True,
             ext_autodoc = True,
             ext_viewcode = True,
             makefile = True,
             batchfile = True,
-            mastertocmaxdepth = opts.maxdepth,
-            mastertoctree = text,
+            maintocmaxdepth = opts.maxdepth,
+            maintoctree = text,
         )
         if not opts.dryrun:
             qs.generate(d, silent=True, overwrite=opts.force)

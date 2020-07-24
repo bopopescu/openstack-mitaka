@@ -156,7 +156,7 @@ class DulwichClientTestBase(object):
 
     def test_send_pack_one_error(self):
         dest, dummy_commit = self.disable_ff_and_make_dummy_commit()
-        dest.refs[b'refs/heads/master'] = dummy_commit
+        dest.refs[b'refs/heads/main'] = dummy_commit
         repo_dir = os.path.join(self.gitroot, 'server_new.export')
         with repo.Repo(repo_dir) as src:
             sendrefs, gen_pack = self.compute_send(src)
@@ -165,17 +165,17 @@ class DulwichClientTestBase(object):
                 c.send_pack(self._build_path('/dest'),
                             lambda _: sendrefs, gen_pack)
             except errors.UpdateRefsError as e:
-                self.assertEqual('refs/heads/master failed to update',
+                self.assertEqual('refs/heads/main failed to update',
                                  e.args[0])
                 self.assertEqual({b'refs/heads/branch': b'ok',
-                                  b'refs/heads/master': b'non-fast-forward'},
+                                  b'refs/heads/main': b'non-fast-forward'},
                                  e.ref_status)
 
     def test_send_pack_multiple_errors(self):
         dest, dummy = self.disable_ff_and_make_dummy_commit()
         # set up for two non-ff errors
-        branch, master = b'refs/heads/branch', b'refs/heads/master'
-        dest.refs[branch] = dest.refs[master] = dummy
+        branch, main = b'refs/heads/branch', b'refs/heads/main'
+        dest.refs[branch] = dest.refs[main] = dummy
         repo_dir = os.path.join(self.gitroot, 'server_new.export')
         with repo.Repo(repo_dir) as src:
             sendrefs, gen_pack = self.compute_send(src)
@@ -187,11 +187,11 @@ class DulwichClientTestBase(object):
                 self.assertIn(
                         str(e),
                         ['{0}, {1} failed to update'.format(
-                            branch.decode('ascii'), master.decode('ascii')),
+                            branch.decode('ascii'), main.decode('ascii')),
                          '{1}, {0} failed to update'.format(
-                             branch.decode('ascii'), master.decode('ascii'))])
+                             branch.decode('ascii'), main.decode('ascii'))])
                 self.assertEqual({branch: b'non-fast-forward',
-                                  master: b'non-fast-forward'},
+                                  main: b'non-fast-forward'},
                                  e.ref_status)
 
     def test_archive(self):
@@ -237,7 +237,7 @@ class DulwichClientTestBase(object):
     def test_incremental_fetch_pack(self):
         self.test_fetch_pack()
         dest, dummy = self.disable_ff_and_make_dummy_commit()
-        dest.refs[b'refs/heads/master'] = dummy
+        dest.refs[b'refs/heads/main'] = dummy
         c = self._client()
         repo_dir = os.path.join(self.gitroot, 'server_new.export')
         with repo.Repo(repo_dir) as dest:
@@ -269,7 +269,7 @@ class DulwichClientTestBase(object):
     def test_send_remove_branch(self):
         with repo.Repo(os.path.join(self.gitroot, 'dest')) as dest:
             dummy_commit = self.make_dummy_commit(dest)
-            dest.refs[b'refs/heads/master'] = dummy_commit
+            dest.refs[b'refs/heads/main'] = dummy_commit
             dest.refs[b'refs/heads/abranch'] = dummy_commit
             sendrefs = dict(dest.refs)
             sendrefs[b'refs/heads/abranch'] = b"00" * 20
